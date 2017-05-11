@@ -19,42 +19,41 @@ class Cecitek(object):
             kwargs['module'] = 'index'
         # print repr(kwargs)
         try:
-            resp = self.session.post(self.URL, data=kwargs)
+            resp = self.session.post(self.URL, data=kwargs, verify=False)
         except Exception, e:
             print "Failed to send request to the server: %s" % e
             return None
         if resp.status_code == 200:
-            data = None
+            try:
+                data = json.loads(resp.text)
+            except:
+                print "Invalid response from the server: %s" %(resp.text)
+                return False
+            notif = data[u'moduleNotifications']
+            if len(notif) > 0:
+                for n in notif:
+                    print u"** %s" % n            
             if 'module' in kwargs:
                 module = kwargs['module']
                 func = getattr(self, "on_%s" % module, None)
                 print "calling on_%s" % module
                 if func:
-                    return func(kwargs, resp)
+                    return func(kwargs, data)
                 else:
                     return False
 
     def authenticate(self, username, password):
         resp = self.query(module='index', action='login', username=username, passwd=password)
 
-    def on_login(self, params, resp):
+    def on_login(self, params, data):
         return self.query(module='episode', action='list')
 
-    def on_index(self, params, resp):
+    def on_index(self, params, data):
         if 'action' in params and params['action'] == 'login':
-            return self.on_login(params, resp)
+            return self.on_login(params, data)
         return True
 
-    def on_episode(self, params, resp):
-        try:
-            data = json.loads(resp.text)
-        except:
-            return False
-        # print repr(data)
-        notif = data[u'moduleNotifications']
-        if len(notif) > 0:
-            for n in notif:
-                print u"** %s" % n
+    def on_episode(self, params, data):
         if 'action' in params and params['action'] == 'list':
             for episode in data[u'episodes']:
                 print u"* %s: %s" %(episode[u'episode_id'], episode[u'episode_title'])
@@ -63,6 +62,7 @@ class Cecitek(object):
             print u"Episode: %s" %(data[u'episode'][u'title'])
             print u"Description: %s" % data[u'episode'][u'header']
             files = data[u'audiofiles']
+            print repr(data)
             for file in files:
                 print u"%s: %s" %(file[u'id'], file[u'file'])
             
