@@ -22,7 +22,7 @@ class Cecitek(object):
         if 'module' not in kwargs:
             kwargs['module'] = 'index'
         try:
-            resp = self.session.post(self.URL, data=kwargs)
+            resp = self.session.post(self.URL, data=kwargs, verify=False)
         except Exception, e:
             logHandler.log.error("Failed to send request to the server: %s" % e)
             return None
@@ -58,20 +58,7 @@ class Cecitek(object):
         return True
 
     def on_episode(self, params, data):
-        if 'action' in params and params['action'] == 'list':
-            for episode in data[u'episodes']:
-                print u"* %s: %s" %(episode[u'episode_id'], episode[u'episode_title'])
-            return True
-        elif params['action'] == 'view':
-            print u"Episode: %s" %(data[u'episode'][u'title'])
-            print u"Description: %s" % data[u'episode'][u'header']
-            files = data[u'audiofiles']
-            print repr(data)
-            for file in files:
-                print u"%s: %s" %(file[u'id'], file[u'file'])
-            
-        elif params['action'] == 'comment':
-            print data
+        return data[u'episodes'];
 
     def on_nvda(self, params, data):
         modules = data[u'modules']
@@ -87,13 +74,10 @@ class Cecitek(object):
         notifs = self.notifications
         self.notifications = []
         return notifs
+
     
-    def cmd_episode(self, args):
-        if len(args) >= 1:
-            limit = args[0]
-        else:
-            limit = 20
-        self.query(module='episode', action='list', limit=limit)
+    def getEpisodes(self, limit=10):
+        return self.query(module='episode', action='list', limit=limit)
 
     def cmd_detail(self, args):
         id = args[0]

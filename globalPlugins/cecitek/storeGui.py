@@ -9,6 +9,7 @@ import ui, gui
 from logHandler import log
 import addonHandler
 import globalVars
+CECITEK_MODULE_NAME = 'cecitek'
 
 class StoreDialog(wx.Dialog):
   _instance = None
@@ -58,7 +59,7 @@ class StoreDialog(wx.Dialog):
     self.enableDisableButton.Bind(wx.EVT_BUTTON,self.onEnableDisable)
     entryButtonsSizer.Add(self.enableDisableButton)
     # Translators: The label for a button in Add-ons Manager dialog to install an add-on.
-    self.addButton=wx.Button(self,label=_("&Install"))
+    self.addButton=wx.Button(self,label=_("&Installer"))
     self.addButton.Bind(wx.EVT_BUTTON,self.onAddClick)
     entryButtonsSizer.Add(self.addButton)
     # Translators: The label for a button to remove either:
@@ -82,6 +83,7 @@ class StoreDialog(wx.Dialog):
     self.EscapeId = wx.ID_CLOSE
     mainSizer.Fit(self)
     self.SetSizer(mainSizer)
+    self.selfUpdateCheck = True
     self.refreshAddonsList()
     self.addonsList.SetFocus()
     self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
@@ -92,13 +94,15 @@ class StoreDialog(wx.Dialog):
       return
     self.installAddon(self.storeAddons[index])
     
-  def installAddon(self, addon, closeAfter=False):
-    ui.message(u"Téléchargement du module %s en cours " %(addon.name))
+  def installAddon(self, addon, closeAfter=False, silent=False):
+    if silent == False:
+      ui.message(u"Téléchargement du module %s en cours " %(addon.name))
     data = self.cecitek.getAddonFile(addon.id, addon.versionId)
     
     if data is None:
-      ui.message(u"Le téléchargement est impossible actuellement.")
-      return
+      if silent == False:
+        ui.message(u"Le téléchargement est impossible actuellement.")
+      return False
     tmp = os.path.join(config.getUserDefaultConfigPath(), "storeDownloadedAddon.nvda-addon")
     log.info(u"Saving to %s" %(tmp))
     f = file(tmp, "wb")
@@ -106,54 +110,63 @@ class StoreDialog(wx.Dialog):
     f.close()
     path = tmp
     if path is None:
-      ui.message(u"Téléchargement de %s impossible" %(addon.name))
-      return
-    ui.message(u"Installation en cours...")
+      if silent == False:
+        ui.message(u"Téléchargement de %s impossible" %(addon.name))
+      return False
+    if silent == False:
+      ui.message(u"Installation en cours...")
     try:
       bundle=addonHandler.AddonBundle(path)
     except:
       log.error("Error opening addon bundle from %s"%path,exc_info=True)
       # Translators: The message displayed when an error occurs when opening an add-on package for adding. 
-      gui.messageBox(_("Failed to open add-on package file at %s - missing file or invalid file format")%path,
-		     # Translators: The title of a dialog presented when an error occurs.
-		     _("Error"),
-		     wx.OK | wx.ICON_ERROR)
-      return
+      if silent == False:
+        gui.messageBox(_("Failed to open add-on package file at %s - missing file or invalid file format")%path,
+		       # Translators: The title of a dialog presented when an error occurs.
+		       _("Error"),
+		       wx.OK | wx.ICON_ERROR)
+        return False
     bundleName=bundle.manifest['name']
     prevAddon=None
-    for addon in self.curAddons:
+    for addon in addonHandler.getAvailableAddons():
       if not addon.isPendingRemove and bundleName==addon.manifest['name']:
 	prevAddon=addon
         break
     if prevAddon:
       prevAddon.requestRemove()
-    progressDialog = gui.IndeterminateProgressDialog(gui.mainFrame,
-			                             # Translators: The title of the dialog presented while an Addon is being installed.
-			                             _("Installing Add-on"),
-			                             # Translators: The message displayed while an addon is being installed.
-			                             _("Please wait while the add-on is being installed."))
+    if silent == False:
+      progressDialog = gui.IndeterminateProgressDialog(gui.mainFrame,
+			                               # Translators: The title of the dialog presented while an Addon is being installed.
+			                               _("Installing Add-on"),
+			                               # Translators: The message displayed while an addon is being installed.
+			                               _("Please wait while the add-on is being installed."))
     try:
       gui.ExecAndPump(addonHandler.installAddonBundle,bundle)
     except:
       log.error("Error installing  addon bundle from %s"%addonPath,exc_info=True)
       self.refreshAddonsList()
+      if silent == False:
+        progressDialog.done()
+        del progressDialog
+      # Translators: The message displayed when an error occurs when installing an add-on package.
+      if silent == False:
+        gui.messageBox(_("Failed to install add-on from %s")%(addon.name),
+		       # Translators: The title of a dialog presented when an error occurs.
+		       _("Error"),
+		       wx.OK | wx.ICON_ERROR)
+      return False
+    self.refreshAddonsList(activeIndex=-1)
+    if silent == False:
       progressDialog.done()
       del progressDialog
-      # Translators: The message displayed when an error occurs when installing an add-on package.
-      gui.messageBox(_("Failed to install add-on from %s")%(addon.name),
-		     # Translators: The title of a dialog presented when an error occurs.
-		     _("Error"),
-		     wx.OK | wx.ICON_ERROR)
-      return
-    self.refreshAddonsList(activeIndex=-1)
-    progressDialog.done()
-    del progressDialog
-    ui.message(u"Installation terminée.")
+      ui.message(u"Installation terminée.")
     if closeAfter:
       # #4460: If we do this immediately, wx seems to drop the WM_QUIT sent if the user chooses to restart.
       # This seems to have something to do with the wx.ProgressDialog.
       # The CallLater seems to work around this.
       wx.CallLater(1, self.Close)
+    return True
+  
       
   def onRemoveClick(self,evt):
     index=self.addonsList.GetFirstSelected()
@@ -168,10 +181,32 @@ class StoreDialog(wx.Dialog):
     self.addonsList.SetFocus()
     
   def getAddonState(self, addon):
+    localAddon = self.getLocalAddon(addon)
+    if localAddon:
+      if localAddon.manifest['version'] < addon.latestVersion:
+        self.addButton.SetLabel(u"Mettre à jour")
+        return u"Mise à jour"
+      else:
+        self.addButton.SetLabel(u"Ré&installer")
+        return u"Installé"
+    else:
+      self.addButton.Enable()
+      self.addButton.SetLabel(u"&installer")
+      return u"Pas installé"
 
-    if self.getLocalAddon(addon):
-      return u"Installé"
-    return u"Pas installé"
+  def selfUpdate(self):
+    for addon in self.storeAddons:
+      if addon.name.upper() == CECITEK_MODULE_NAME.upper():
+        localAddon = self.getLocalAddon(addon)
+        if localAddon and localAddon.manifest[u'version'] < addon.latestVersion:
+          # We should self-update the Cecitek module itself.
+          if gui.messageBox(_(u"Une nouvelle version du module Cecitek est disponible. Souhaitez-vous l'installer maintenant? Cela entraînera un redémarrage de NVDA."),
+		            _(u"Mise à jour"),
+                            wx.YES_NO|wx.ICON_WARNING) == wx.YES:
+            ui.message(u"Mise à jour en cours...")
+            ret = self.installAddon(addon, True, True)
+            if ret: return
+            self.selfUpdateCheck = False
 
   def refreshAddonsList(self,activeIndex=0):
     self.addonsList.DeleteAllItems()
@@ -179,6 +214,9 @@ class StoreDialog(wx.Dialog):
     # for addon in addonHandler.getAvailableAddons():
     # self.addonsList.Append((addon.manifest['summary'], self.getAddonStatus(addon), addon.manifest['version'], addon.manifest['author']))
     # self.curAddons.append(addon)
+    if self.selfUpdateCheck is True:
+      wx.CallLater(1, self.selfUpdate)
+      self.selfUpdateCheck = False
     for addon in self.storeAddons:
       self.addonsList.Append((addon.name, self.getAddonState(addon), addon.latestVersion, addon.author))
     # select the given active addon or the first addon if not given
@@ -233,11 +271,11 @@ class StoreDialog(wx.Dialog):
       # _("Restart NVDA"),
       # wx.YES|wx.NO|wx.ICON_WARNING)==wx.YES:
       core.restart()
-        
+
   def onAbout(self,evt):
     index=self.addonsList.GetFirstSelected()
     if index<0: return
-    manifest=self.curAddons[index].manifest
+    manifest = self.getLocalAddon(self.storeAddons[index]).manifest
     # Translators: message shown in the Addon Information dialog. 
     message=_("""{summary} ({name})
 Version: {version}
