@@ -8,6 +8,7 @@ import languageHandler
 import ui, gui
 from logHandler import log
 import addonHandler
+addonHandler.initTranslation()
 import globalVars
 CECITEK_MODULE_NAME = 'cecitek'
 
