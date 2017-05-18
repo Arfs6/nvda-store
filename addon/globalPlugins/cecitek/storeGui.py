@@ -300,7 +300,7 @@ Description: {description}
   def onEnableDisable(self, evt):
     index=self.addonsList.GetFirstSelected()
     if index<0: return
-    addon=self.curAddons[index]
+    addon = self.getLocalAddon(self.storeAddons[index])
     shouldDisable = self._shouldDisable(addon)
     # Counterintuitive, but makes sense when context is taken into account.
     addon.enable(not shouldDisable)
