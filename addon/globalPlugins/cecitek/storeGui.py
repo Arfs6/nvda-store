@@ -14,6 +14,7 @@ CECITEK_MODULE_NAME = 'cecitek'
 
 class StoreDialog(wx.Dialog):
   _instance = None
+  internalCategories = []
 
   def __init__(self,parent, cecitek, storeAddons):
     StoreDialog._instance = self
@@ -22,13 +23,24 @@ class StoreDialog(wx.Dialog):
     StoreDialog._instance.storeAddons = storeAddons
     StoreDialog._instance.cecitek = cecitek
     mainSizer=wx.BoxSizer(wx.VERTICAL)
+    panelSizer = wx.BoxSizer(wx.HORIZONTAL)
     settingsSizer=wx.BoxSizer(wx.VERTICAL)
+    categoriesSizer = wx.BoxSizer(wx.VERTICAL)
     entriesSizer=wx.BoxSizer(wx.VERTICAL)
     if globalVars.appArgs.disableAddons:
       # Translators: A message in the add-ons manager shown when all add-ons are disabled.
       addonsDisabledLabel=wx.StaticText(self,-1,label=_("All add-ons are currently disabled. To enable add-ons you must restart NVDA."))
       mainSizer.Add(addonsDisabledLabel)
       # Translators: the label for the installed addons list in the addons manager.
+    categoriesLabel = wx.StaticText(self, -1, label=_("Categories"))
+    categoriesSizer.Add(categoriesLabel)
+    self.categories = wx.ListCtrl(self,-1,style=wx.LC_REPORT|wx.LC_SINGLE_SEL,size=(200,350))
+    self.categories.InsertColumn(0,_("category"),width=150)
+    self.categories.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onCategoryItemSelected)
+    categoriesSizer.Add(self.categories)
+    panelSizer.Add(categoriesSizer)
+
+    # Modules list.
     entriesLabel=wx.StaticText(self,-1,label=_("Modules"))
     entriesSizer.Add(entriesLabel)
     self.addonsList=wx.ListCtrl(self,-1,style=wx.LC_REPORT|wx.LC_SINGLE_SEL,size=(550,350))
@@ -41,8 +53,8 @@ class StoreDialog(wx.Dialog):
     # Translators: The label for a column in add-ons list used to identify add-on's author (example: author is NV Access).
     self.addonsList.InsertColumn(3,_("Author"),width=300)
     self.addonsList.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onListItemSelected)
-    entriesSizer.Add(self.addonsList,proportion=8)
-    settingsSizer.Add(entriesSizer)
+    entriesSizer.Add(self.addonsList)
+    panelSizer.Add(entriesSizer)
     entryButtonsSizer=wx.BoxSizer(wx.HORIZONTAL)
     # Translators: The label for a button in Add-ons Manager dialog to show information about the selected add-on.
     self.aboutButton=wx.Button(self,label=_("&About add-on..."))
@@ -74,6 +86,7 @@ class StoreDialog(wx.Dialog):
     self.getAddonsButton=wx.Button(self,label=_("Store"))
     self.getAddonsButton.Bind(wx.EVT_BUTTON,self.onGetAddonsClick)
     entryButtonsSizer.Add(self.getAddonsButton)
+    settingsSizer.Add(panelSizer)
     settingsSizer.Add(entryButtonsSizer)
     mainSizer.Add(settingsSizer,border=20,flag=wx.LEFT|wx.RIGHT|wx.TOP)
     # Translators: The label of a button to close the Addons dialog.
@@ -85,10 +98,14 @@ class StoreDialog(wx.Dialog):
     mainSizer.Fit(self)
     self.SetSizer(mainSizer)
     self.selfUpdateCheck = True
+    self.refreshCategoriesList()
     self.refreshAddonsList()
     self.addonsList.SetFocus()
     self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
-    
+
+  def onCategoryItemSelected(self, evt):
+    return True
+  
   def onAddClick(self,evt):
     index=self.addonsList.GetFirstSelected()
     if index == -1:
@@ -208,6 +225,17 @@ class StoreDialog(wx.Dialog):
             if ret: return
             self.selfUpdateCheck = False
 
+  def refreshCategoriesList(self):
+    self.internalCategories = self.cecitek.getModuleCategories()
+    self.categories.DeleteAllItems()
+    for category in self.internalCategories:
+      try:
+        name = self.cecitek.storeCategories[category[u'name']]
+      except:
+        name = category[u'name']
+      log.info(u"Category: %s" %(name))
+      self.categories.Append((name))
+  
   def refreshAddonsList(self,activeIndex=0):
     self.addonsList.DeleteAllItems()
     self.curAddons=[]

@@ -3,13 +3,23 @@
 import requests
 import json
 import logHandler
+storeCategories = {
+    u"braille": _("Braille"),
+    u"internet": _("Internet"),
+    u"core": _("NVDA Core features"),
+    u"tts": _("Speech synths and voices"),
+}
 
 class Cecitek(object):
     URL = 'https://www.cecitek.fr/'
+    proxies = {}
     notifications = []
 
-    def __init__(self):
+    def __init__(self, config):
         super(Cecitek, self).__init__()
+        if config is not None and 'proxies' in config:
+            logHandler.log.info("Using proxies : %s" %(config['proxies']))
+            self.proxies = config['proxies']
         self.session = requests.Session()
         
     def ping(self):
@@ -22,7 +32,7 @@ class Cecitek(object):
         if 'module' not in kwargs:
             kwargs['module'] = 'index'
         try:
-            resp = self.session.post(self.URL, data=kwargs, verify=False)
+            resp = self.session.request("POST", self.URL, data=kwargs, verify=False, proxies=self.proxies)
         except Exception, e:
             logHandler.log.error("Failed to send request to the server: %s" % e)
             return None
@@ -30,13 +40,14 @@ class Cecitek(object):
             if '_binary' in kwargs and kwargs['_binary'] is True:
               return resp.content
             try:
-              data = json.loads(resp.text)
+                logHandler.log.info(u"response: %s" %(resp.text))
+                data = json.loads(resp.text)
             except:
               logHandler.log.info("Invalid response from the server: %s" %(resp.text))
               return False                
             if len(data[u'moduleNotifications']) > 0:
               for n in data[u'moduleNotifications']:
-                self.notifications.append(notif)
+                self.notifications.append(n)
         if 'module' in kwargs:
           module = kwargs['module']
           func = getattr(self, "on_%s" % module, None)
@@ -61,11 +72,16 @@ class Cecitek(object):
         return data[u'episodes'];
 
     def on_nvda(self, params, data):
+        if 'action' in params and params['action'] == 'categories':
+            return data[u'categories']
         modules = data[u'modules']
         return modules
 
     def getNvdaModules(self):
         return self.query(module='nvda', action='index')
+    def getModuleCategories(self):
+        return self.query(module='nvda', action='categories')
+    
     def getAddonFile(self, id, id_addon):
       res = self.query(module='nvda', action='download', id=id, id_version=id_addon, _binary=True)
       logHandler.log.info("Downloaded %d bytes from the server" %(len(res)))

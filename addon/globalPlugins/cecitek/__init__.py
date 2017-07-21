@@ -5,7 +5,7 @@
 
 import os, sys
 import api
-import ui, gui
+import ui, gui, config
 import storeGui
 import globalPluginHandler, logHandler, addonHandler
 addonHandler.initTranslation()
@@ -18,6 +18,7 @@ del sys.path[-1]
 
 class StoreAddon(object):
     id = ""
+    category = ""
     name = ""
     description = ""
     author = ""
@@ -26,9 +27,10 @@ class StoreAddon(object):
     versionChangelog = ""
     versionId = ""
 
-    def __init__(self, id, name, author, email, description):
+    def __init__(self, id, category, name, author, email, description):
         super(StoreAddon, self).__init__()
         self.id = id
+        self.category = category
         self.name = name
         self.author = author
         self.email = email
@@ -45,12 +47,28 @@ class StoreAddon(object):
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     scriptCategory = _("Cecitek")
+    moduleConfig = {}
     addons = []
     
     def __init__(self):
         super(globalPluginHandler.GlobalPlugin, self).__init__()
-        self.cecitek = cecitek.Cecitek()
-    
+        self.loadConfiguration()
+        self.cecitek = cecitek.Cecitek(self.moduleConfig)
+
+    def loadConfiguration(self):
+        try:
+            f = file(os.path.join(config.getUserDefaultConfigPath(), "cecitek.json"))
+            data = json.loads(f.read())
+            self.moduleConfig = data
+        except:
+            pass
+        
+    def getCategory(self, catList, id):
+        for cat in catList:
+            if cat[u'id'] == id:
+                return cat[u'name']
+        return None
+
     def script_cecitekStore(self, gesture):
         self.addons = []
         modules = self.cecitek.getNvdaModules()
@@ -60,8 +78,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if modules is None or len(modules) == 0:
             ui.message(_("Unable to connect to the Cecitek NVDAStore. Please check you're connected to the internet."))
             return
+        catList = self.cecitek.getModuleCategories()
+        if catList is None or len(catList) == 0:
+            ui.message(_("Unable to connect to the Cecitek NVDAStore. Please check you're connected to the internet."))
+            return
+        
         for module in modules:
-            m = StoreAddon(module[u'id'], module[u'name'], module[u'author'], module[u'email'], module[u'description'])
+            m = StoreAddon(module[u'id'], self.getCategory(catList, module[u'id_category']), module[u'name'], module[u'author'], module[u'email'], module[u'description'])
             for v in module[u'versions']:
                 m.addVersion(v[u'id'], v[u'version'], v[u'changelog'], v[u'minNvdaVersion'], v[u'maxNvdaVersion'])
             if m.latestVersion != "":
