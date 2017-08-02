@@ -7,6 +7,7 @@ import os, sys
 import api
 import ui, gui, config
 import storeGui
+import capabilities
 import globalPluginHandler, logHandler, addonHandler
 addonHandler.initTranslation()
 sys.path.append(os.path.dirname(__file__))
@@ -35,16 +36,46 @@ class StoreAddon(object):
         self.author = author
         self.email = email
         self.description = description
-    def addVersion(self, id, version, changelog, minVersion, maxVersion):
+    def addVersion(self, id, version, changelog, minVersion, maxVersion, capabilities=None):
         import versionInfo
         if (versionInfo.version >= minVersion and versionInfo.version <= maxVersion) or 'next' in versionInfo.version or 'dev' in versionInfo.version or 'master' in versionInfo.version:
-            if self.latestVersion <= version:
+            if self.checkCapabilities(version, capabilities) and self.latestVersion <= version:
                 self.latestVersion = version
                 self.versionChangelog = changelog
                 self.versionId = id
     def __str__(self):
         return u"%s (%s)" %(self.name, self.latestVersion)
 
+    def checkCapabilities(self, version, requiredCaps):
+        global capCache
+        missingCaps = []
+        if requiredCaps is None:
+            return True
+        for capability in requiredCaps.split(","):
+            try:
+                ret = capCache[capability]
+            except:
+                ret = None
+            if ret is not None:
+                if ret is False:
+                    missingCaps.append(capability)
+                continue                
+            capName = "cap_%s" % capability
+            capMethod = getattr(capabilities, capName, None)
+            if capMethod is not None:
+                logHandler.log.info("Executing %s" % capName)
+                ret = capMethod()
+            else:
+                ret = False
+            capCache[capability] = ret
+            if ret is False:
+                missingCaps.append(capability)
+        if len(missingCaps) > 0:
+            logHandler.log.info("The following capabilities are missing for %s to be installed: %s" %(self.name, ", ".join(missingCaps)))
+            return False
+        return True
+
+capCache={}
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     scriptCategory = _("Cecitek")
     moduleConfig = {}
@@ -70,6 +101,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         return None
 
     def script_cecitekStore(self, gesture):
+        global capCache
+        capCache = {}
         self.addons = []
         modules = self.cecitek.getNvdaModules()
         notifs = self.cecitek.getNotifications()
@@ -86,7 +119,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         for module in modules:
             m = StoreAddon(module[u'id'], self.getCategory(catList, module[u'id_category']), module[u'name'], module[u'author'], module[u'email'], module[u'description'])
             for v in module[u'versions']:
-                m.addVersion(v[u'id'], v[u'version'], v[u'changelog'], v[u'minNvdaVersion'], v[u'maxNvdaVersion'])
+                caps = None
+                try:
+                    caps = v[u'capabilities']
+                except:
+                    caps = None
+                m.addVersion(v[u'id'], v[u'version'], v[u'changelog'], v[u'minNvdaVersion'], v[u'maxNvdaVersion'], caps)
             if m.latestVersion != "":
                 self.addons.append(m)
             

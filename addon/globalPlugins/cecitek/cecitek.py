@@ -3,12 +3,7 @@
 import requests
 import json
 import logHandler
-storeCategories = {
-    u"braille": _("Braille"),
-    u"internet": _("Internet"),
-    u"core": _("NVDA Core features"),
-    u"tts": _("Speech synths and voices"),
-}
+
 
 class Cecitek(object):
     URL = 'https://www.cecitek.fr/'
@@ -84,7 +79,10 @@ class Cecitek(object):
     
     def getAddonFile(self, id, id_addon):
       res = self.query(module='nvda', action='download', id=id, id_version=id_addon, _binary=True)
-      logHandler.log.info("Downloaded %d bytes from the server" %(len(res)))
+      if res is not None:
+          logHandler.log.info("Downloaded %d bytes from the server" %(len(res)))
+      else:
+          logHandler.log.error("Failed to download the desired addon.")
       return res
     def getNotifications(self):
         notifs = self.notifications

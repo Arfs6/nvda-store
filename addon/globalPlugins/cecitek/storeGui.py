@@ -11,6 +11,13 @@ import addonHandler
 addonHandler.initTranslation()
 import globalVars
 CECITEK_MODULE_NAME = 'cecitek'
+storeCategories = {
+  u"apps": _("Application-specific modules"),
+  u"braille": _("Braille"),
+  u"internet": _("Internet"),
+  u"core": _("NVDA Core features"),
+  u"tts": _("Speech synths and voices"),
+}
 
 class StoreDialog(wx.Dialog):
   _instance = None
@@ -34,8 +41,8 @@ class StoreDialog(wx.Dialog):
       # Translators: the label for the installed addons list in the addons manager.
     categoriesLabel = wx.StaticText(self, -1, label=_("Categories"))
     categoriesSizer.Add(categoriesLabel)
-    self.categories = wx.ListCtrl(self,-1,style=wx.LC_REPORT|wx.LC_SINGLE_SEL,size=(200,350))
-    self.categories.InsertColumn(0,_("category"),width=150)
+    self.categories = wx.ListCtrl(self,-1,style=wx.LC_REPORT|wx.LC_SINGLE_SEL,size=(300,350))
+    self.categories.InsertColumn(0,_("category"))
     self.categories.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onCategoryItemSelected)
     categoriesSizer.Add(self.categories)
     panelSizer.Add(categoriesSizer)
@@ -134,7 +141,7 @@ class StoreDialog(wx.Dialog):
     if silent == False:
       ui.message(_("Installing"))
     try:
-      bundle=addonHandler.AddonBundle(path)
+      bundle = addonHandler.AddonBundle(path)
     except:
       log.error("Error opening addon bundle from %s"%path,exc_info=True)
       # Translators: The message displayed when an error occurs when opening an add-on package for adding. 
@@ -226,36 +233,40 @@ class StoreDialog(wx.Dialog):
             self.selfUpdateCheck = False
 
   def refreshCategoriesList(self):
+    global storeCategories
+
     self.internalCategories = self.cecitek.getModuleCategories()
     self.categories.DeleteAllItems()
+    self.categories.Append((_("All")))
     for category in self.internalCategories:
+      name = category[u'name']
       try:
-        name = self.cecitek.storeCategories[category[u'name']]
-      except:
-        name = category[u'name']
+        name = storeCategories[name]
+      except Exception, e:
+        log.exception("Failed to get key for %s: %s" %(name, e))
+        pass
       log.info(u"Category: %s" %(name))
       self.categories.Append((name))
-  
+    self.categories.Select(0, on=1)
+    self.categories.SetItemState(0, wx.LIST_STATE_FOCUSED, wx.LIST_STATE_FOCUSED)
+
   def refreshAddonsList(self,activeIndex=0):
     self.addonsList.DeleteAllItems()
-    self.curAddons=[]
-    # for addon in addonHandler.getAvailableAddons():
-    # self.addonsList.Append((addon.manifest['summary'], self.getAddonStatus(addon), addon.manifest['version'], addon.manifest['author']))
-    # self.curAddons.append(addon)
+    self.curAddons = []
     if self.selfUpdateCheck is True:
       wx.CallLater(1, self.selfUpdate)
       self.selfUpdateCheck = False
     for addon in self.storeAddons:
       self.addonsList.Append((addon.name, self.getAddonState(addon), addon.latestVersion, addon.author))
     # select the given active addon or the first addon if not given
-    curAddonsLen=len(self.curAddons)
-    if curAddonsLen>0:
-      if activeIndex==-1:
-	activeIndex=curAddonsLen-1
-      elif activeIndex<0 or activeIndex>=curAddonsLen:
-	activeIndex=0
-      self.addonsList.Select(activeIndex,on=1)
-      self.addonsList.SetItemState(activeIndex,wx.LIST_STATE_FOCUSED,wx.LIST_STATE_FOCUSED)
+    curAddonsLen = len(self.curAddons)
+    if curAddonsLen > 0:
+      if activeIndex == -1:
+	activeIndex = curAddonsLen - 1
+      elif activeIndex < 0 or activeIndex >= curAddonsLen:
+	activeIndex = 0
+      self.addonsList.Select(activeIndex, on=1)
+      self.addonsList.SetItemState(activeIndex, wx.LIST_STATE_FOCUSED, wx.LIST_STATE_FOCUSED)
     else:
       self.aboutButton.Disable()
       self.helpButton.Disable()
@@ -272,7 +283,7 @@ class StoreDialog(wx.Dialog):
     
   def onListItemSelected(self, evt):
     index=evt.GetIndex()
-    storeAddon=self.storeAddons[index] if index>=0 else None
+    storeAddon = self.storeAddons[index] if index >= 0 else None
     addon = self.getLocalAddon(storeAddon)
     # #3090: Change toggle button label to indicate action to be taken if clicked.
     if addon is not None:
@@ -302,7 +313,7 @@ class StoreDialog(wx.Dialog):
 
   def onAbout(self,evt):
     index=self.addonsList.GetFirstSelected()
-    if index<0: return
+    if index <0 : return
     manifest = self.getLocalAddon(self.storeAddons[index]).manifest
     # Translators: message shown in the Addon Information dialog. 
     message=_("""{summary} ({name})
