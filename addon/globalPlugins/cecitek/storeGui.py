@@ -26,7 +26,7 @@ class StoreDialog(wx.Dialog):
   def __init__(self,parent, cecitek, storeAddons):
     StoreDialog._instance = self
     # Translators: The title of the Addons Dialog
-    super(StoreDialog,self).__init__(parent,title=_("NVDAStore (Cecitek.fr)"))
+    super(StoreDialog,self).__init__(parent,title=_("NVDAStore (Cecitek.fr)"), pos=(100,200))
     StoreDialog._instance.storeAddons = storeAddons
     StoreDialog._instance.cecitek = cecitek
     mainSizer = wx.BoxSizer(wx.VERTICAL)
@@ -61,6 +61,15 @@ class StoreDialog(wx.Dialog):
     self.addonsList.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onListItemSelected)
     entriesSizer.Add(self.addonsList)
     panelSizer.Add(entriesSizer)
+
+    # Text control to show version information.
+
+    descSizer = wx.BoxSizer(wx.VERTICAL)
+    descLabel = wx.StaticText(self, -1, label=_("Description"))
+    descSizer.Add(descLabel)
+    self.descCtrl = wx.TextCtrl(self, wx.ID_ANY, size=(400, 350), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
+    descSizer.Add(self.descCtrl)
+    panelSizer.Add(descSizer)
     entryButtonsSizer=wx.BoxSizer(wx.HORIZONTAL)
     # Translators: The label for a button in Add-ons Manager dialog to show information about the selected add-on.
     self.aboutButton=wx.Button(self,label=_("&About add-on..."))
@@ -115,7 +124,7 @@ class StoreDialog(wx.Dialog):
       return
     index -= 1
     category = None
-    if index > 0:
+    if index >= 0:
       try:
         category = self.internalCategories[index][u'name']
       except KeyError, e:
@@ -295,6 +304,16 @@ class StoreDialog(wx.Dialog):
   def onListItemSelected(self, evt):
     index=evt.GetIndex()
     storeAddon = self.storeAddons[index] if index >= 0 else None
+    text = ""
+    text = storeAddon.description
+    text += "\n\n"
+    text += _("Changelog:")
+    text += "\n"
+    text += storeAddon.versionChangelog
+    self.descCtrl.Clear()
+    self.descCtrl.AppendText(text)
+    self.descCtrl.SetInsertionPoint(0)
+    
     addon = self.getLocalAddon(storeAddon)
     # #3090: Change toggle button label to indicate action to be taken if clicked.
     if addon is not None:
