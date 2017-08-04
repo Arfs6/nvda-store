@@ -278,6 +278,7 @@ class StoreDialog(wx.Dialog):
     for addon in self.storeAddons:
       if category is None or category == addon.category:
         self.addonsList.Append((addon.name, self.getAddonState(addon), addon.latestVersion, addon.author))
+        self.curAddons.append(addon)
     # select the given active addon or the first addon if not given
     curAddonsLen = len(self.curAddons)
     if curAddonsLen > 0:
@@ -303,7 +304,12 @@ class StoreDialog(wx.Dialog):
     
   def onListItemSelected(self, evt):
     index=evt.GetIndex()
-    storeAddon = self.storeAddons[index] if index >= 0 else None
+    listAddon = self.curAddons[index]
+    storeAddon = None
+    for addon in self.storeAddons:
+      if addon.name == listAddon.name:
+        storeAddon = addon
+    if storeAddon is None: return
     text = ""
     text = storeAddon.description
     text += "\n\n"
