@@ -29,11 +29,11 @@ class StoreDialog(wx.Dialog):
     super(StoreDialog,self).__init__(parent,title=_("NVDAStore (Cecitek.fr)"))
     StoreDialog._instance.storeAddons = storeAddons
     StoreDialog._instance.cecitek = cecitek
-    mainSizer=wx.BoxSizer(wx.VERTICAL)
+    mainSizer = wx.BoxSizer(wx.VERTICAL)
     panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-    settingsSizer=wx.BoxSizer(wx.VERTICAL)
+    settingsSizer = wx.BoxSizer(wx.VERTICAL)
     categoriesSizer = wx.BoxSizer(wx.VERTICAL)
-    entriesSizer=wx.BoxSizer(wx.VERTICAL)
+    entriesSizer = wx.BoxSizer(wx.VERTICAL)
     if globalVars.appArgs.disableAddons:
       # Translators: A message in the add-ons manager shown when all add-ons are disabled.
       addonsDisabledLabel=wx.StaticText(self,-1,label=_("All add-ons are currently disabled. To enable add-ons you must restart NVDA."))
@@ -41,9 +41,8 @@ class StoreDialog(wx.Dialog):
       # Translators: the label for the installed addons list in the addons manager.
     categoriesLabel = wx.StaticText(self, -1, label=_("Categories"))
     categoriesSizer.Add(categoriesLabel)
-    self.categories = wx.ListCtrl(self,-1,style=wx.LC_REPORT|wx.LC_SINGLE_SEL,size=(300,350))
-    self.categories.InsertColumn(0,_("category"))
-    self.categories.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onCategoryItemSelected)
+    self.categories = wx.ListBox(self, -1, style = wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(300, 350))
+    self.categories.Bind(wx.EVT_LISTBOX, self.onCategoryItemSelected)
     categoriesSizer.Add(self.categories)
     panelSizer.Add(categoriesSizer)
 
@@ -111,6 +110,19 @@ class StoreDialog(wx.Dialog):
     self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
 
   def onCategoryItemSelected(self, evt):
+    index = self.categories.GetSelection()
+    if index is wx.NOT_FOUND:
+      return
+    index -= 1
+    category = None
+    if index > 0:
+      try:
+        category = self.internalCategories[index][u'name']
+      except KeyError, e:
+        category = None
+        log.exception("Unable to get category at index %d: %s" %(index, e))
+    # log.info("Refreshing addons for category %s" % category)
+    self.refreshAddonsList(category=category)
     return True
   
   def onAddClick(self,evt):
@@ -192,16 +204,16 @@ class StoreDialog(wx.Dialog):
     return True
   
       
-  def onRemoveClick(self,evt):
-    index=self.addonsList.GetFirstSelected()
-    if index<0: return
+  def onRemoveClick(self, evt):
+    index = self.addonsList.GetFirstSelected()
+    if index < 0: return
     # Translators: Presented when attempting to remove the selected add-on.
     if gui.messageBox(_("Are you sure you wish to remove the selected add-on from NVDA?"),
 		      # Translators: Title for message asking if the user really wishes to remove the selected Addon.
-		      _("Remove Add-on"), wx.YES_NO|wx.ICON_WARNING) != wx.YES: return
-    addon=self.getLocalAddon(self.storeAddons[index])
+		      _("Remove Add-on"), wx.YES_NO | wx.ICON_WARNING) != wx.YES: return
+    addon = self.getLocalAddon(self.storeAddons[index])
     addon.requestRemove()
-    self.refreshAddonsList(activeIndex=index)
+    self.refreshAddonsList(activeIndex = index)
     self.addonsList.SetFocus()
     
   def getAddonState(self, addon):
@@ -226,7 +238,7 @@ class StoreDialog(wx.Dialog):
           # We should self-update the Cecitek module itself.
           if gui.messageBox(_(u"A new release is available for the Cecitek add-on. Would you like to install it right now? This will cause NVDA to restart."),
 		            _(u"Update available"),
-                            wx.YES_NO|wx.ICON_WARNING) == wx.YES:
+                            wx.YES_NO | wx.ICON_WARNING) == wx.YES:
             ui.message(_("Updating..."))
             ret = self.installAddon(addon, True, True)
             if ret: return
@@ -236,8 +248,8 @@ class StoreDialog(wx.Dialog):
     global storeCategories
 
     self.internalCategories = self.cecitek.getModuleCategories()
-    self.categories.DeleteAllItems()
-    self.categories.Append((_("All")))
+    self.categories.Clear()
+    self.categories.Append(_("All"))
     for category in self.internalCategories:
       name = category[u'name']
       try:
@@ -245,19 +257,18 @@ class StoreDialog(wx.Dialog):
       except Exception, e:
         log.exception("Failed to get key for %s: %s" %(name, e))
         pass
-      log.info(u"Category: %s" %(name))
-      self.categories.Append((name))
-    self.categories.Select(0, on=1)
-    self.categories.SetItemState(0, wx.LIST_STATE_FOCUSED, wx.LIST_STATE_FOCUSED)
+      self.categories.Append(name)
+    self.categories.Select(0)
 
-  def refreshAddonsList(self,activeIndex=0):
+  def refreshAddonsList(self,activeIndex=0, category=None):
     self.addonsList.DeleteAllItems()
     self.curAddons = []
     if self.selfUpdateCheck is True:
       wx.CallLater(1, self.selfUpdate)
       self.selfUpdateCheck = False
     for addon in self.storeAddons:
-      self.addonsList.Append((addon.name, self.getAddonState(addon), addon.latestVersion, addon.author))
+      if category is None or category == addon.category:
+        self.addonsList.Append((addon.name, self.getAddonState(addon), addon.latestVersion, addon.author))
     # select the given active addon or the first addon if not given
     curAddonsLen = len(self.curAddons)
     if curAddonsLen > 0:
