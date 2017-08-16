@@ -1,17 +1,22 @@
 # *-* coding: utf-8 *-*
+# nvdastore/storeApi.py
+#A part of NVDAStore Add-on
+#Copyright (C) 2017 Yannick PLASSIARD
+#This file is covered by the GNU General Public License.
+#See the file LICENSE for more details.
 
 import requests
 import json
 import logHandler
 
 
-class Cecitek(object):
+class NVDAStoreClient(object):
     URL = 'https://www.cecitek.fr/'
     proxies = {}
     notifications = []
 
     def __init__(self, config):
-        super(Cecitek, self).__init__()
+        super(NVDAStoreClient, self).__init__()
         if config is not None and 'proxies' in config:
             logHandler.log.info("Using proxies : %s" %(config['proxies']))
             self.proxies = config['proxies']
@@ -33,7 +38,7 @@ class Cecitek(object):
             return None
         if resp.status_code == 200:
             if '_binary' in kwargs and kwargs['_binary'] is True:
-              return resp.content
+                return resp.content
             try:
                 logHandler.log.info(u"response: %s" %(resp.text))
                 data = json.loads(resp.text)
@@ -43,10 +48,11 @@ class Cecitek(object):
             if len(data[u'moduleNotifications']) > 0:
               for n in data[u'moduleNotifications']:
                 self.notifications.append(n)
+        if 'action' in kwargs and 'action' == 'login':
+            return on_login(kwargs, data)
         if 'module' in kwargs:
           module = kwargs['module']
           func = getattr(self, "on_%s" % module, None)
-          print "calling on_%s" % module
           if func:
             return func(kwargs, data)
           else:
@@ -58,13 +64,10 @@ class Cecitek(object):
     def on_login(self, params, data):
         self.authenticated = data[u'authenticated']
 
+        
     def on_index(self, params, data):
-        if 'action' in params and params['action'] == 'login':
-            return self.on_login(params, data)
         return True
 
-    def on_episode(self, params, data):
-        return data[u'episodes'];
 
     def on_nvda(self, params, data):
         if 'action' in params and params['action'] == 'categories':
@@ -90,15 +93,3 @@ class Cecitek(object):
         return notifs
 
     
-    def getEpisodes(self, limit=10):
-        return self.query(module='episode', action='list', limit=limit)
-
-    def cmd_detail(self, args):
-        id = args[0]
-        self.query(module='episode', action='view', id=id)
-
-    def cmd_comment(self, args):
-        id = args[0]
-        self.query(module='episode', action='comment', epId=id)
-    
-

@@ -1,6 +1,10 @@
 # *-* coding: utf-8 *-*
+# nvdastore/__init__.py
+#A part of the NVDAStore Add-on
+#Copyright (C) 2017 Yannick PLASSIARD
+#This file is covered by the GNU General Public License.
+#See the file LICENSE for more details.
 
-# *-* coding: utf8 *-*
 
 
 import os, sys
@@ -13,8 +17,8 @@ addonHandler.initTranslation()
 sys.path.append(os.path.dirname(__file__))
 import hmac
 import requests
-import cecitek
 import json
+import storeApi
 del sys.path[-1]
 
 class StoreAddon(object):
@@ -41,7 +45,7 @@ class StoreAddon(object):
         if (versionInfo.version >= minVersion and versionInfo.version <= maxVersion) or 'next' in versionInfo.version or 'dev' in versionInfo.version or 'master' in versionInfo.version:
             if self.checkCapabilities(version, capabilities) and self.latestVersion <= version:
                 self.latestVersion = version
-                self.versionChangelog = changelog
+                self.versionChangelog = "Version: " + version + "\r\n" + changelog + "\r\n\r\n" + self.versionChangelog
                 self.versionId = id
     def __str__(self):
         return u"%s (%s)" %(self.name, self.latestVersion)
@@ -77,19 +81,20 @@ class StoreAddon(object):
 
 capCache={}
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
-    scriptCategory = _("Cecitek")
+    scriptCategory = _("NVDAStore")
     moduleConfig = {}
     addons = []
     
     def __init__(self):
         super(globalPluginHandler.GlobalPlugin, self).__init__()
         self.loadConfiguration()
-        self.cecitek = cecitek.Cecitek(self.moduleConfig)
+        self.storeClient = storeApi.NVDAStoreClient(self.moduleConfig)
 
     def loadConfiguration(self):
         try:
-            f = file(os.path.join(config.getUserDefaultConfigPath(), "cecitek.json"))
+            f = file(os.path.join(config.getUserDefaultConfigPath(), "nvdastore.json"))
             data = json.loads(f.read())
+            f.close()
             self.moduleConfig = data
         except:
             pass
@@ -100,18 +105,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 return cat[u'name']
         return None
 
-    def script_cecitekStore(self, gesture):
+    def script_nvdaStore(self, gesture):
         global capCache
         capCache = {}
         self.addons = []
-        modules = self.cecitek.getNvdaModules()
-        notifs = self.cecitek.getNotifications()
+        modules = self.storeClient.getNvdaModules()
+        notifs = self.storeClient.getNotifications()
         if len(notifs) > 0:
             ui.message(_(u"Notification: %s" %(", ".join(notifs))))
         if modules is None or len(modules) == 0:
             ui.message(_("Unable to connect to the Cecitek NVDAStore. Please check you're connected to the internet."))
             return
-        catList = self.cecitek.getModuleCategories()
+        catList = self.storeClient.getModuleCategories()
         if catList is None or len(catList) == 0:
             ui.message(_("Unable to connect to the Cecitek NVDAStore. Please check you're connected to the internet."))
             return
@@ -133,19 +138,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             log += "%s (%s) " %(a.name, a.latestVersion)
         logHandler.log.info("Available addons in the store: %s" % log)
         gui.mainFrame.prePopup()
-        dlg = storeGui.StoreDialog(gui.mainFrame, self.cecitek, self.addons)
+        dlg = storeGui.StoreDialog(gui.mainFrame, self.storeClient, self.addons)
         dlg.Show()
         gui.mainFrame.postPopup()
         del dlg
 
-    script_cecitekStore.__doc__ = _("Opens the NVDA Store to download, install and update NVDA add-ons.")
-    def script_cecitekEpisode(self, gesture):
-        episodes = self.cecitek.getEpisodes(limit=1)
-        ui.message(_("Last published episode: %s") %(episodes[0]['episode_title']))
-    script_cecitekEpisode.__doc__ = _("Speaks the latest published episode title from Cecitek.fr")
+    script_nvdaStore.__doc__ = _("Opens the NVDA Store to download, install and update NVDA add-ons.")
 
     __gestures = {
-        "kb:nvda+shift+c": "cecitekStore",
-        "kb:nvda+shift+e": "cecitekEpisode",
+        "kb:nvda+shift+c": "nvdaStore",
     }
     

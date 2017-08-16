@@ -1,9 +1,13 @@
 # *-* coding: utf-8 *-*
 #
-# Capabilities.py
-# Retrieves capabilities from the system or NVDA itself that addons can check against to ensure they will work on the target environment before install.
+# cecitek/capabilities.py
+#A part of Cecitek NVDA Add-on
+#Copyright (C) 2017 Yannick PLASSIARD
+#This file is covered by the GNU General Public License.
+#See the file LICENSE for more details.
 #
-## Tee the LICENSE file for license information.
+# Retrieves capabilities from the system or NVDA itself that addons can check against to ensure
+# they will work on the target environment before install.
 #
 
 import config

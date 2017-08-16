@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cecitek 0.4\n"
+"Project-Id-Version: cecitek 0.6\n"
 "Report-Msgid-Bugs-To: podcastcecitek@gmail.com\n"
-"POT-Creation-Date: 2017-08-04 17:32+0200\n"
+"POT-Creation-Date: 2017-08-16 15:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Yannick PLASSIARD <plassiardyannick@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. Translators: The title of the Addons Dialog
 #. Add-on summary, usually the user visible name of the addon.
 #. Translators: Summary for this add-on to be shown on installation and add-on information.
-#: addon/globalPlugins/cecitek/__init__.py:80 buildVars.py:17
-msgid "Cecitek"
-msgstr "Cecitek"
+#: addon/globalPlugins/nvdastore/__init__.py:84
+#: addon/globalPlugins/nvdastore/storeGui.py:34 buildVars.py:17
+#, fuzzy
+msgid "NVDAStore"
+msgstr "NVDAStore"
 
-#: addon/globalPlugins/cecitek/__init__.py:110
+#: addon/globalPlugins/nvdastore/__init__.py:115
 #, python-format
 msgid "Notification: %s"
 msgstr "Notifications: %s"
 
-#: addon/globalPlugins/cecitek/__init__.py:112
-#: addon/globalPlugins/cecitek/__init__.py:116
+#: addon/globalPlugins/nvdastore/__init__.py:117
+#: addon/globalPlugins/nvdastore/__init__.py:121
 msgid ""
 "Unable to connect to the Cecitek NVDAStore. Please check you're connected to "
 "the internet."
@@ -37,48 +40,34 @@ msgstr ""
 "Impossible de se connecter au Cecitek NVDAStore. Vérifiez votre connexion "
 "Internet."
 
-#: addon/globalPlugins/cecitek/__init__.py:141
+#: addon/globalPlugins/nvdastore/__init__.py:146
 msgid "Opens the NVDA Store to download, install and update NVDA add-ons."
 msgstr ""
 "Ouvre le NVDAStore pour télécharger, installer et mettre à jour ees modules "
 "complémentaires."
 
-#: addon/globalPlugins/cecitek/__init__.py:144
-#, python-format
-msgid "Last published episode: %s"
-msgstr "Dernier épisode publié: %s"
-
-#: addon/globalPlugins/cecitek/__init__.py:145
-msgid "Speaks the latest published episode title from Cecitek.fr"
-msgstr "Annonce le titre du dernier épisode publié sur Cecitek.fr"
-
-#: addon/globalPlugins/cecitek/storeGui.py:15
+#: addon/globalPlugins/nvdastore/storeGui.py:20
 msgid "Application-specific modules"
 msgstr "Modules complémentaires pour des applications spécifiques"
 
-#: addon/globalPlugins/cecitek/storeGui.py:16
+#: addon/globalPlugins/nvdastore/storeGui.py:21
 msgid "Braille"
 msgstr "Braille"
 
-#: addon/globalPlugins/cecitek/storeGui.py:17
+#: addon/globalPlugins/nvdastore/storeGui.py:22
 msgid "Internet"
 msgstr "Internet"
 
-#: addon/globalPlugins/cecitek/storeGui.py:18
+#: addon/globalPlugins/nvdastore/storeGui.py:23
 msgid "NVDA Core features"
 msgstr "Extensions du coeur de NVDA"
 
-#: addon/globalPlugins/cecitek/storeGui.py:19
+#: addon/globalPlugins/nvdastore/storeGui.py:24
 msgid "Speech synths and voices"
 msgstr "Synthèses vocales"
 
-#. Translators: The title of the Addons Dialog
-#: addon/globalPlugins/cecitek/storeGui.py:29
-msgid "NVDAStore (Cecitek.fr)"
-msgstr "NVDAStore (Cecitek.fr)"
-
 #. Translators: A message in the add-ons manager shown when all add-ons are disabled.
-#: addon/globalPlugins/cecitek/storeGui.py:39
+#: addon/globalPlugins/nvdastore/storeGui.py:44
 msgid ""
 "All add-ons are currently disabled. To enable add-ons you must restart NVDA."
 msgstr ""
@@ -86,97 +75,97 @@ msgstr ""
 "avant d'utiliser ce module."
 
 #. Translators: the label for the installed addons list in the addons manager.
-#: addon/globalPlugins/cecitek/storeGui.py:42
+#: addon/globalPlugins/nvdastore/storeGui.py:47
 msgid "Categories"
 msgstr "Catégories"
 
 #. Modules list.
-#: addon/globalPlugins/cecitek/storeGui.py:50
+#: addon/globalPlugins/nvdastore/storeGui.py:55
 msgid "Modules"
 msgstr "Modules"
 
 #. Translators: The label for a column in add-ons list used to identify add-on package name (example: package is OCR).
-#: addon/globalPlugins/cecitek/storeGui.py:54
+#: addon/globalPlugins/nvdastore/storeGui.py:59
 msgid "Package"
 msgstr "Paquet"
 
 #. Translators: The label for a column in add-ons list used to identify add-on's running status (example: status is running).
-#: addon/globalPlugins/cecitek/storeGui.py:56
+#: addon/globalPlugins/nvdastore/storeGui.py:61
 msgid "Status"
 msgstr "état"
 
 #. Translators: The label for a column in add-ons list used to identify add-on's version (example: version is 0.3).
-#: addon/globalPlugins/cecitek/storeGui.py:58
+#: addon/globalPlugins/nvdastore/storeGui.py:63
 msgid "Version"
 msgstr "Version"
 
 #. Translators: The label for a column in add-ons list used to identify add-on's author (example: author is NV Access).
-#: addon/globalPlugins/cecitek/storeGui.py:60
+#: addon/globalPlugins/nvdastore/storeGui.py:65
 msgid "Author"
 msgstr "Auteur"
 
-#: addon/globalPlugins/cecitek/storeGui.py:68
+#: addon/globalPlugins/nvdastore/storeGui.py:73
 msgid "Description"
 msgstr "Description"
 
 #. Translators: The label for a button in Add-ons Manager dialog to show information about the selected add-on.
-#: addon/globalPlugins/cecitek/storeGui.py:75
-msgid "&About add-on..."
-msgstr "&A propos de ce module complémentaire..."
+#: addon/globalPlugins/nvdastore/storeGui.py:80
+msgid "&about add-on..."
+msgstr "&a propos de ce module complémentaire..."
 
 #. Translators: The label for a button in Add-ons Manager dialog to show the help for the selected add-on.
-#: addon/globalPlugins/cecitek/storeGui.py:80
+#: addon/globalPlugins/nvdastore/storeGui.py:85
 msgid "Add-on &help"
 msgstr "Aide du module complémentaire"
 
 #. Translators: The label for a button in Add-ons Manager dialog to enable or disable the selected add-on.
-#: addon/globalPlugins/cecitek/storeGui.py:85
-#: addon/globalPlugins/cecitek/storeGui.py:321
-#: addon/globalPlugins/cecitek/storeGui.py:376
+#: addon/globalPlugins/nvdastore/storeGui.py:90
+#: addon/globalPlugins/nvdastore/storeGui.py:333
+#: addon/globalPlugins/nvdastore/storeGui.py:388
 msgid "&Disable add-on"
 msgstr "&Désactiver le module complémentaire"
 
 #. Translators: The label for a button in Add-ons Manager dialog to install an add-on.
-#: addon/globalPlugins/cecitek/storeGui.py:90
+#: addon/globalPlugins/nvdastore/storeGui.py:95
 msgid "&Install"
 msgstr "&Installer"
 
 #. Translators: The label for a button to remove either:
 #. Remove the selected add-on in Add-ons Manager dialog.
 #. Remove a speech dictionary entry.
-#: addon/globalPlugins/cecitek/storeGui.py:96
+#: addon/globalPlugins/nvdastore/storeGui.py:101
 msgid "&Remove"
 msgstr "&Supprimer"
 
 #. Translators: The label of a button in Add-ons Manager to open the Add-ons website and get more add-ons.
-#: addon/globalPlugins/cecitek/storeGui.py:101
+#: addon/globalPlugins/nvdastore/storeGui.py:106
 msgid "Store"
 msgstr "Store"
 
 #. Translators: The label of a button to close the Addons dialog.
-#: addon/globalPlugins/cecitek/storeGui.py:108
+#: addon/globalPlugins/nvdastore/storeGui.py:114
 msgid "&Close"
 msgstr "&Fermer"
 
-#: addon/globalPlugins/cecitek/storeGui.py:145
+#: addon/globalPlugins/nvdastore/storeGui.py:151
 #, python-format
 msgid "Downloading %s"
 msgstr "Téléchargement de %s en cours"
 
-#: addon/globalPlugins/cecitek/storeGui.py:150
+#: addon/globalPlugins/nvdastore/storeGui.py:156
 msgid "Unable to download the add-on."
 msgstr "Impossible de télécharger le module complémentaire."
 
-#: addon/globalPlugins/cecitek/storeGui.py:160
+#: addon/globalPlugins/nvdastore/storeGui.py:166
 #, python-format
 msgid "Unable to download %s"
 msgstr "Impossible de télécharger %s"
 
-#: addon/globalPlugins/cecitek/storeGui.py:163
+#: addon/globalPlugins/nvdastore/storeGui.py:169
 msgid "Installing"
 msgstr "Installation en cours"
 
-#: addon/globalPlugins/cecitek/storeGui.py:170
+#: addon/globalPlugins/nvdastore/storeGui.py:176
 #, python-format
 msgid ""
 "Failed to open add-on package file at %s - missing file or invalid file "
@@ -186,94 +175,95 @@ msgstr ""
 "fichier invalide"
 
 #. Translators: The title of a dialog presented when an error occurs.
-#: addon/globalPlugins/cecitek/storeGui.py:172
-#: addon/globalPlugins/cecitek/storeGui.py:201
+#: addon/globalPlugins/nvdastore/storeGui.py:178
+#: addon/globalPlugins/nvdastore/storeGui.py:207
 msgid "Error"
 msgstr "Erreur"
 
 #. Translators: The title of the dialog presented while an Addon is being installed.
-#: addon/globalPlugins/cecitek/storeGui.py:186
+#: addon/globalPlugins/nvdastore/storeGui.py:192
 msgid "Installing Add-on"
 msgstr "Installation du module complémentaire"
 
 #. Translators: The message displayed while an addon is being installed.
-#: addon/globalPlugins/cecitek/storeGui.py:188
+#: addon/globalPlugins/nvdastore/storeGui.py:194
 msgid "Please wait while the add-on is being installed."
 msgstr "Veuillez patienter durant l'installation du module complémentaire"
 
-#: addon/globalPlugins/cecitek/storeGui.py:199
+#: addon/globalPlugins/nvdastore/storeGui.py:205
 #, python-format
 msgid "Failed to install add-on from %s"
 msgstr "Impossible d'installer le module depuis %s"
 
 #. Translators: Presented when attempting to remove the selected add-on.
-#: addon/globalPlugins/cecitek/storeGui.py:220
+#: addon/globalPlugins/nvdastore/storeGui.py:226
 msgid "Are you sure you wish to remove the selected add-on from NVDA?"
 msgstr "êtes-vous sûr de vouloir désinstaller ce module?"
 
 #. Translators: Title for message asking if the user really wishes to remove the selected Addon.
-#: addon/globalPlugins/cecitek/storeGui.py:222
+#: addon/globalPlugins/nvdastore/storeGui.py:228
 msgid "Remove Add-on"
 msgstr "Supprimer le module complémentaire"
 
-#: addon/globalPlugins/cecitek/storeGui.py:232
+#: addon/globalPlugins/nvdastore/storeGui.py:238
 msgid "&update"
 msgstr "&mettre à jour"
 
-#: addon/globalPlugins/cecitek/storeGui.py:233
+#: addon/globalPlugins/nvdastore/storeGui.py:239
 msgid "update available"
 msgstr "mise à jour disponible"
 
-#: addon/globalPlugins/cecitek/storeGui.py:235
+#: addon/globalPlugins/nvdastore/storeGui.py:241
 #, fuzzy
 msgid "Re&install"
 msgstr "&réinstaller"
 
-#: addon/globalPlugins/cecitek/storeGui.py:236
+#: addon/globalPlugins/nvdastore/storeGui.py:242
 msgid "Up to date"
 msgstr "à jour"
 
-#: addon/globalPlugins/cecitek/storeGui.py:239
+#: addon/globalPlugins/nvdastore/storeGui.py:245
 msgid "&install"
 msgstr "&installer"
 
-#: addon/globalPlugins/cecitek/storeGui.py:240
+#: addon/globalPlugins/nvdastore/storeGui.py:246
 msgid "Not installed"
 msgstr "Pas installé"
 
-#. We should self-update the Cecitek module itself.
-#: addon/globalPlugins/cecitek/storeGui.py:248
+#. We should self-update the NVDAStore module itself.
+#: addon/globalPlugins/nvdastore/storeGui.py:254
+#, fuzzy
 msgid ""
-"A new release is available for the Cecitek add-on. Would you like to install "
-"it right now? This will cause NVDA to restart."
+"A new release is available for the NVDAStore add-on. Would you like to "
+"install it right now? This will cause NVDA to restart."
 msgstr ""
-"Nouvelle version du module Cecitek disponible. Souhaitez-vous l'installer "
+"Nouvelle version du module NVDAStore disponible. Souhaitez-vous l'installer "
 "maintenant? Cela entraînera le redémarrage de NVDA."
 
-#: addon/globalPlugins/cecitek/storeGui.py:249
+#: addon/globalPlugins/nvdastore/storeGui.py:255
 msgid "Update available"
 msgstr "Mise à jour disponible"
 
-#: addon/globalPlugins/cecitek/storeGui.py:251
+#: addon/globalPlugins/nvdastore/storeGui.py:257
 msgid "Updating..."
 msgstr "Mise à jour en cours..."
 
-#: addon/globalPlugins/cecitek/storeGui.py:261
+#: addon/globalPlugins/nvdastore/storeGui.py:267
 msgid "All"
 msgstr "Tous"
 
-#: addon/globalPlugins/cecitek/storeGui.py:310
+#: addon/globalPlugins/nvdastore/storeGui.py:322
 msgid "Changelog:"
 msgstr "Nouveautés:"
 
 #. Translators: The label for a button in Add-ons Manager dialog to enable or disable the selected add-on.
-#: addon/globalPlugins/cecitek/storeGui.py:321
-#: addon/globalPlugins/cecitek/storeGui.py:376
+#: addon/globalPlugins/nvdastore/storeGui.py:333
+#: addon/globalPlugins/nvdastore/storeGui.py:388
 msgid "&Enable add-on"
 msgstr "A&ctiver"
 
 #. Translators: message shown in the Addon Information dialog.
-#: addon/globalPlugins/cecitek/storeGui.py:349
+#: addon/globalPlugins/nvdastore/storeGui.py:361
 #, python-brace-format
 msgid ""
 "{summary} ({name})\n"
@@ -287,21 +277,20 @@ msgstr ""
 "Description: {description}\n"
 
 #. Translators: the url part of the About Add-on information
-#: addon/globalPlugins/cecitek/storeGui.py:357
+#: addon/globalPlugins/nvdastore/storeGui.py:369
 #, python-brace-format
 msgid "URL: {url}"
 msgstr "Site web: {url}"
 
 #. Translators: title for the Addon Information dialog
-#: addon/globalPlugins/cecitek/storeGui.py:359
+#: addon/globalPlugins/nvdastore/storeGui.py:371
 msgid "Add-on Information"
 msgstr "Informations sur le module complémentaire"
 
 #. Add-on description
 #. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
 #: buildVars.py:20
-msgid "NVDA Module for the Cecitek French podcast."
-msgstr "Accédez au contenus de Cecitek.fr depuis NVDA"
+#, fuzzy
+msgid "Download install and update add-ons within NVDA."
+msgstr "Télécharger, installer et mettre à jour des modules complémentaires directement depuis NVDA."
 
-#~ msgid "category"
-#~ msgstr "Catégorie"

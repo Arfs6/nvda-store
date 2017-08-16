@@ -1,4 +1,9 @@
 # *-* coding: utf-8 *-*
+# nvdastore/storeGui.py
+#A part of the NVDAStore Add-on
+#Copyright (C) 2017 Yannick PLASSIARD
+#This file is covered by the GNU General Public License.
+#See the file LICENSE for more details.
 
 import os
 import wx
@@ -10,7 +15,7 @@ from logHandler import log
 import addonHandler
 addonHandler.initTranslation()
 import globalVars
-CECITEK_MODULE_NAME = 'cecitek'
+NVDASTORE_MODULE_NAME = 'nvdastore'
 storeCategories = {
   u"apps": _("Application-specific modules"),
   u"braille": _("Braille"),
@@ -23,12 +28,12 @@ class StoreDialog(wx.Dialog):
   _instance = None
   internalCategories = []
 
-  def __init__(self,parent, cecitek, storeAddons):
+  def __init__(self,parent, storeClient, storeAddons):
     StoreDialog._instance = self
     # Translators: The title of the Addons Dialog
-    super(StoreDialog,self).__init__(parent,title=_("NVDAStore (Cecitek.fr)"), pos=(100,200))
+    super(StoreDialog,self).__init__(parent,title=_("NVDAStore"), pos=(100,200), size=(800, 600))
     StoreDialog._instance.storeAddons = storeAddons
-    StoreDialog._instance.cecitek = cecitek
+    StoreDialog._instance.storeClient = storeClient
     mainSizer = wx.BoxSizer(wx.VERTICAL)
     panelSizer = wx.BoxSizer(wx.HORIZONTAL)
     settingsSizer = wx.BoxSizer(wx.VERTICAL)
@@ -69,7 +74,7 @@ class StoreDialog(wx.Dialog):
     descSizer.Add(descLabel)
     self.descCtrl = wx.TextCtrl(self, wx.ID_ANY, size=(400, 350), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
     descSizer.Add(self.descCtrl)
-    panelSizer.Add(descSizer)
+    panelSizer.Add(descSizer, proportion=3)
     entryButtonsSizer=wx.BoxSizer(wx.HORIZONTAL)
     # Translators: The label for a button in Add-ons Manager dialog to show information about the selected add-on.
     self.aboutButton=wx.Button(self,label=_("&About add-on..."))
@@ -102,6 +107,7 @@ class StoreDialog(wx.Dialog):
     self.getAddonsButton.Bind(wx.EVT_BUTTON,self.onGetAddonsClick)
     entryButtonsSizer.Add(self.getAddonsButton)
     settingsSizer.Add(panelSizer)
+
     settingsSizer.Add(entryButtonsSizer)
     mainSizer.Add(settingsSizer,border=20,flag=wx.LEFT|wx.RIGHT|wx.TOP)
     # Translators: The label of a button to close the Addons dialog.
@@ -143,7 +149,7 @@ class StoreDialog(wx.Dialog):
   def installAddon(self, addon, closeAfter=False, silent=False):
     if silent == False:
       ui.message(_("Downloading %s") %(addon.name))
-    data = self.cecitek.getAddonFile(addon.id, addon.versionId)
+    data = self.storeClient.getAddonFile(addon.id, addon.versionId)
     
     if data is None:
       if silent == False:
@@ -241,11 +247,11 @@ class StoreDialog(wx.Dialog):
 
   def selfUpdate(self):
     for addon in self.storeAddons:
-      if addon.name.upper() == CECITEK_MODULE_NAME.upper():
+      if addon.name.upper() == NVDASTORE_MODULE_NAME.upper():
         localAddon = self.getLocalAddon(addon)
         if localAddon and localAddon.manifest[u'version'] < addon.latestVersion:
-          # We should self-update the Cecitek module itself.
-          if gui.messageBox(_(u"A new release is available for the Cecitek add-on. Would you like to install it right now? This will cause NVDA to restart."),
+          # We should self-update the NVDAStore module itself.
+          if gui.messageBox(_(u"A new release is available for the NVDAStore add-on. Would you like to install it right now? This will cause NVDA to restart."),
 		            _(u"Update available"),
                             wx.YES_NO | wx.ICON_WARNING) == wx.YES:
             ui.message(_("Updating..."))
@@ -256,7 +262,7 @@ class StoreDialog(wx.Dialog):
   def refreshCategoriesList(self):
     global storeCategories
 
-    self.internalCategories = self.cecitek.getModuleCategories()
+    self.internalCategories = self.storeClient.getModuleCategories()
     self.categories.Clear()
     self.categories.Append(_("All"))
     for category in self.internalCategories:

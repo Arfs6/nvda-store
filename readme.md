@@ -1,6 +1,7 @@
-# nvda-cecitek
-## NVDAStore - A fast, easy yet secure way to install and update addons
-Version 0.5
+# NVDAStore
+## A fast, easy yet secure way to install and update addons within NVDA.
+Version 0.6
+
 ## Introduction
 This document describes how to use the NVDAStore Addon, an effective way to download install and update addons within QVDA.
 The main user features of this module are:
