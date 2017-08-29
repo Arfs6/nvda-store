@@ -24,9 +24,9 @@ This document is divided into two main sections:
 ## User Guide
 ### Installation
 This add-on installs like any other NVDA add-on. You can download it from the following URL:
-- [Cecitek-0.5.nvda-addon](https://github.com/YPlassiard/nvda-cecitek/)
+- [NVDAStore-0.5.nvda-addon](https://github.com/YPlassiard/nvda-store/)
 
-When downloaded, double-click the "cecisek-x.y.nvda-addon" file to initiate the install process, while NVDA is running. When the install completes, NVDA needs to be restarted before using the add-on for the first time.
+When downloaded, double-click the "nvdastore-x.y.nvda-addon" file to initiate the install process, while NVDA is running. When the install completes, NVDA needs to be restarted before using the add-on for the first time.
 
 ### Opening the NVDAStore
 To open the NVDAStore, you can press the _NVDA+Shift+C_ shortcut. Please note that it's always possible to change this shortcut in the NVDA Gesture preference dialog.
@@ -69,15 +69,15 @@ Then, create a simple text file with your favorite editor (may be Notepad for ex
 }
 ```
 
-Save the file as "cecitek.json" and restart NVDA for the changes to be effective. Please note that the ".json" extension is very important, and be careful of certain editors that automatically adds a ".txt" extension at the en of the filename. If you are in this situation, simply rename the file using the Windows Explorer.
+Save the file as "nvdastore.json" and restart NVDA for the changes to be effective. Please note that the ".json" extension is very important, and be careful of certain editors that automatically add a ".txt" extension at the end of the filename. If you are in this situation, simply rename the file using the Windows Explorer.
 ### Issues and bug-reports
 
 For issues and bug-reports, feel free to either:
-- Open an [Issue on GitHub](https://github.com/YPlassiard/nvda-cecitek/issue/new)
+- Open an [Issue on GitHub](https://github.com/YPlassiard/nvda-store/issue/new)
 - Or if you're not familiar with GitHub, [Send a mail](mailto:podcastcecitek@gmail.com) to the team.
 
 ## Developer's Guide
-This section describes what you need to do to publish xour add-on into the NVDAStore. We strongly encourage you to use GitHub to host your add-on's source code because our update checker script works perfectly well with the GitHub Releases feature. However, it's completely possible to benefit from all NVDAStore features without a GitHub repository.
+This section describes what you need to do to publish your add-on into the NVDAStore. We strongly encourage you to use GitHub to host your add-on's source code because our update checker script works perfectly well with the GitHub Releases feature. However, it's completely possible to benefit from all NVDAStore features without a GitHub repository.
 ### Architecture description
 The store can be divided in two parts:
 - The server-side APIs
@@ -101,4 +101,4 @@ The following sequence illustrates a typical user session:
 - When receiving results, it runs some capability checks upon each add-on version to determine whether an add-on is installable or updatable.
 - It then builds the user-interface with relevant information.
 - When the user clicks on the "Update" or "Install" button, the client asks the server for the add-on binary matching the desired version.
-- When all data has been received, the downloaded add-on issaved to a temporarx file and the installation process starts.
+- When all data has been received, the downloaded add-on is saved to a temporary file and the installation process starts.
