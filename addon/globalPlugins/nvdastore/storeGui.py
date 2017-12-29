@@ -15,6 +15,7 @@ from logHandler import log
 import addonHandler
 addonHandler.initTranslation()
 import globalVars
+import storeUtils
 NVDASTORE_MODULE_NAME = 'nvdastore'
 storeCategories = {
   u"apps": _("Application-specific modules"),
@@ -144,79 +145,8 @@ class StoreDialog(wx.Dialog):
     index=self.addonsList.GetFirstSelected()
     if index == -1:
       return
-    self.installAddon(self.storeAddons[index])
+    storeUtils.installAddon(self.storeClient, self.storeAddons[index])
     
-  def installAddon(self, addon, closeAfter=False, silent=False):
-    if silent == False:
-      ui.message(_("Downloading %s") %(addon.name))
-    data = self.storeClient.getAddonFile(addon.id, addon.versionId)
-    
-    if data is None:
-      if silent == False:
-        ui.message(_("Unable to download the add-on."))
-      return False
-    tmp = os.path.join(config.getUserDefaultConfigPath(), "storeDownloadedAddon.nvda-addon")
-    log.info(u"Saving to %s" %(tmp))
-    f = file(tmp, "wb")
-    f.write(data)
-    f.close()
-    path = tmp
-    if path is None:
-      if silent == False:
-        ui.message(_("Unable to download %s") %(addon.name))
-      return False
-    if silent == False:
-      ui.message(_("Installing"))
-    try:
-      bundle = addonHandler.AddonBundle(path)
-    except:
-      log.error("Error opening addon bundle from %s"%path,exc_info=True)
-      # Translators: The message displayed when an error occurs when opening an add-on package for adding. 
-      if silent == False:
-        gui.messageBox(_("Failed to open add-on package file at %s - missing file or invalid file format")%path,
-		       # Translators: The title of a dialog presented when an error occurs.
-		       _("Error"),
-		       wx.OK | wx.ICON_ERROR)
-        return False
-    bundleName=bundle.manifest['name']
-    prevAddon=None
-    for addon in addonHandler.getAvailableAddons():
-      if not addon.isPendingRemove and bundleName==addon.manifest['name']:
-	prevAddon=addon
-        break
-    if prevAddon:
-      prevAddon.requestRemove()
-    if silent == False:
-      progressDialog = gui.IndeterminateProgressDialog(gui.mainFrame,
-			                               # Translators: The title of the dialog presented while an Addon is being installed.
-			                               _("Installing Add-on"),
-			                               # Translators: The message displayed while an addon is being installed.
-			                               _("Please wait while the add-on is being installed."))
-    try:
-      gui.ExecAndPump(addonHandler.installAddonBundle,bundle)
-    except:
-      log.error("Error installing  addon bundle from %s"%addonPath,exc_info=True)
-      self.refreshAddonsList()
-      if silent == False:
-        progressDialog.done()
-        del progressDialog
-      # Translators: The message displayed when an error occurs when installing an add-on package.
-      if silent == False:
-        gui.messageBox(_("Failed to install add-on from %s")%(addon.name),
-		       # Translators: The title of a dialog presented when an error occurs.
-		       _("Error"),
-		       wx.OK | wx.ICON_ERROR)
-      return False
-    self.refreshAddonsList(activeIndex=-1)
-    if silent == False:
-      progressDialog.done()
-      del progressDialog
-    if closeAfter:
-      # #4460: If we do this immediately, wx seems to drop the WM_QUIT sent if the user chooses to restart.
-      # This seems to have something to do with the wx.ProgressDialog.
-      # The CallLater seems to work around this.
-      wx.CallLater(1, self.Close)
-    return True
   
       
   def onRemoveClick(self, evt):
@@ -245,19 +175,10 @@ class StoreDialog(wx.Dialog):
       self.addButton.SetLabel(_("&install"))
       return _("Not installed")
 
-  def selfUpdate(self):
-    for addon in self.storeAddons:
-      if addon.name.upper() == NVDASTORE_MODULE_NAME.upper():
-        localAddon = self.getLocalAddon(addon)
-        if localAddon and localAddon.manifest[u'version'] < addon.latestVersion:
-          # We should self-update the NVDAStore module itself.
-          if gui.messageBox(_(u"A new release is available for the NVDAStore add-on. Would you like to install it right now? This will cause NVDA to restart."),
-		            _(u"Update available"),
-                            wx.YES_NO | wx.ICON_WARNING) == wx.YES:
-            ui.message(_("Updating..."))
-            ret = self.installAddon(addon, True, True)
-            if ret: return
-            self.selfUpdateCheck = False
+      
+                   
+                         
+              
 
   def refreshCategoriesList(self):
     global storeCategories
@@ -275,6 +196,9 @@ class StoreDialog(wx.Dialog):
       self.categories.Append(name)
     self.categories.Select(0)
 
+  def selfUpdate(self):
+    return
+  
   def refreshAddonsList(self,activeIndex=0, category=None):
     self.addonsList.DeleteAllItems()
     self.curAddons = []

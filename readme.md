@@ -95,7 +95,7 @@ The client is responsible for sending requests to the server depending on the us
 
 ### Typical workflow
 The following sequence illustrates a typical user session:
-- The user press _NVDA+Shift+C_
+- The user press _NVDA+Shift+N_
 - The NVDAStore client connects to the server and asks for an updated list of all available add-ons.
 - At the same time, it also asks for a list of all known add-on's categories.
 - When receiving results, it runs some capability checks upon each add-on version to determine whether an add-on is installable or updatable.
