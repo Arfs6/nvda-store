@@ -8,18 +8,21 @@
 
 
 import os, sys, time
+import globalVars
+import globalPluginHandler, logHandler
 import api
 import ui, wx, gui, core, config, nvwave
-import storeGui, storeUtils
+import storeGui, storeUtils, storeConfig
 import capabilities
-import globalPluginHandler, logHandler, addonHandler
-addonHandler.initTranslation()
 sys.path.append(os.path.dirname(__file__))
 import hmac
 import requests
 import json
 import storeApi
 del sys.path[-1]
+import addonHandler
+addonHandler.initTranslation()
+
 NVDASTORE_MODULE_NAME = 'nvdastore'
 
 class StoreAddon(object):
@@ -41,7 +44,7 @@ class StoreAddon(object):
         self.author = author
         self.email = email
         self.description = description
-    def addVersion(self, id, version, changelog, minVersion, maxVersion, capabilities="touch"):
+    def addVersion(self, id, version, changelog, minVersion, maxVersion, capabilities=None):
         import versionInfo
         if (versionInfo.version >= minVersion and versionInfo.version <= maxVersion) or 'next' in versionInfo.version or 'dev' in versionInfo.version or 'master' in versionInfo.version:
             if self.checkCapabilities(version, capabilities):
@@ -58,7 +61,7 @@ class StoreAddon(object):
         global capCache
         missingCaps = []
         if requiredCaps is None:
-            requiredCaps = 'touch'
+            return True
         for capability in requiredCaps.split(","):
             try:
                 ret = capCache[capability]
@@ -76,7 +79,7 @@ class StoreAddon(object):
                     ret = capMethod()
                 except Exception, e:
                     ret = False
-                    logHandler.log.exception("Failed toexecute method", e)
+                    logHandler.log.exception("Failed to execute method", e)
             else:
                 ret = False
             capCache[capability] = ret
@@ -90,25 +93,20 @@ class StoreAddon(object):
 capCache={}
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     scriptCategory = _("NVDAStore")
-    moduleConfig = {}
     addons = []
     
     def __init__(self):
         super(globalPluginHandler.GlobalPlugin, self).__init__()
+        if globalVars.appArgs.secure: return
+        self.prefsMenu = gui.mainFrame.sysTrayIcon.preferencesMenu
+        # Instanciate our preference menu.
+        self.storePrefs = self.prefsMenu.Append(wx.ID_ANY, _("NVDAStore settings..."), _("NVDAStore Add-on settings"))
+        gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, storeConfig.onConfigDialog, self.storePrefs)
+        
         self.refreshing = False
         self.updates = []
-        self.loadConfiguration()
-        self.storeClient = storeApi.NVDAStoreClient(self.moduleConfig)
+        self.storeClient = storeApi.NVDAStoreClient()
         wx.CallLater(5000, self.refreshAddons)
-
-    def loadConfiguration(self):
-        try:
-            f = file(os.path.join(config.getUserDefaultConfigPath(), "nvdastore.json"))
-            data = json.loads(f.read())
-            f.close()
-            self.moduleConfig = data
-        except:
-            pass
         
     def getCategory(self, catList, id):
         for cat in catList:
@@ -122,6 +120,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             self.refreshAddons()
 
     def refreshAddons(self, silent=False):
+        addonHandler.initTranslation()
         global capCache
         self.refreshing = True
         capCache = {}
@@ -164,10 +163,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         return None
 
     def selfUpdate(self, silent=False):
+        addonHandler.initTranslation()
         self.updates = []
         for addon in self.addons:
             localAddon = self.getLocalAddon(addon)
-            if localAddon and localAddon.manifest[u'version'] <= addon.latestVersion:
+            if localAddon and localAddon.manifest[u'version'] < addon.latestVersion:
                 if addon.name.upper() == NVDASTORE_MODULE_NAME.upper():
                     # We should self-update the NVDAStore module itself.
                     if gui.messageBox(_(u"A new release is available for the NVDAStore add-on. Woul,d you like to install it right now? This will cause NVDA to restart."),
@@ -183,7 +183,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if len(self.updates) > 0:
             nvwave.playWaveFile(os.path.join(os.path.dirname(__file__), "..", "..", "sounds", "notify.wav"))
             if silent is False:
-                ui.message(_("NVDAStore: %d addons can be updated. Press NVDA+Shift+Control+U to update them." %(len(self.updates))))
+                ui.message(_("Addons updates available."))
 
 
     def script_updateAll(self, gesture):

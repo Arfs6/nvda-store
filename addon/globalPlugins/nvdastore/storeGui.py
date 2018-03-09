@@ -32,7 +32,11 @@ class StoreDialog(wx.Dialog):
   def __init__(self,parent, storeClient, storeAddons):
     StoreDialog._instance = self
     # Translators: The title of the Addons Dialog
-    super(StoreDialog,self).__init__(parent,title=_("NVDAStore"), pos=(100,200), size=(800, 600))
+    profile = storeClient.getUserProfile()
+    title = _("NVDAStore")
+    if profile is not None:
+      title = _("NVDASTORE (%s %s)" %(profile[u'fname'], profile[u'lname']))
+    super(StoreDialog,self).__init__(parent,title=title, pos=(100,200), size=(800, 600))
     StoreDialog._instance.storeAddons = storeAddons
     StoreDialog._instance.storeClient = storeClient
     mainSizer = wx.BoxSizer(wx.VERTICAL)
@@ -259,7 +263,16 @@ class StoreDialog(wx.Dialog):
       self.helpButton.Enable(bool(addon is not None and not addon.isPendingRemove and addon.getDocFilePath()))
       self.enableDisableButton.Enable(addon is not None and not addon.isPendingRemove)
       self.removeButton.Enable(addon is not None and not addon.isPendingRemove)
+      if addon.manifest['version'] < storeAddon.latestVersion:
+        self.addButton.SetLabel(_("&update"))
+      else:
+        self.addButton.SetLabel(_("Re&install"))
+    else:
+      self.addButton.Enable()
+      self.addButton.SetLabel(_("&install"))
+
       
+
   def onClose(self,evt):
     self.Destroy()
     needsRestart = False

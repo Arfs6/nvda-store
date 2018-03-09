@@ -1,7 +1,13 @@
-# *-* coding: utf8 *-*
+# *-* coding: utf-8 *-*
+# nvdastore/storeUtils.py
+#A part of the NVDAStore Add-on
+#Copyright (C) 2017 Yannick PLASSIARD
+#This file is covered by the GNU General Public License.
+#See the file LICENSE for more details.
 
 import addonHandler, core, config, ui, gui, wx, os
 import logHandler
+addonHandler.initTranslation()
 
 def installAddon(storeClient, addon, closeAfter=False, silent=False):
     if silent == False:

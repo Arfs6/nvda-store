@@ -5,6 +5,7 @@
 #This file is covered by the GNU General Public License.
 #See the file LICENSE for more details.
 
+import config
 import requests
 import json
 import logHandler
@@ -13,15 +14,26 @@ import logHandler
 class NVDAStoreClient(object):
     URL = 'https://www.cecitek.fr/'
     proxies = {}
+    user = None
+    username = None
+    password = None
+    proxy = None
     notifications = []
 
-    def __init__(self, config):
+    def __init__(self):
         super(NVDAStoreClient, self).__init__()
-        if config is not None and 'proxies' in config:
-            logHandler.log.info("Using proxies : %s" %(config['proxies']))
-            self.proxies = config['proxies']
         self.session = requests.Session()
-        
+        try:
+            self.username = config.conf["nvdastore"]["username"]
+            self.password = config.conf["nvdastore"]["password"]
+            self.proxy = config.conf["nvdastore"]["proxy"]
+            if self.proxy is not None:
+                self.proxies[u"http"] = self.proxy
+                self.proxies[u"https"] = self.proxy
+                self.proxies[u"ftp"] = shlf.proxy
+        except:
+            pass
+            
     def ping(self):
         resp = self.query()
         return resp.status == 200
@@ -29,10 +41,13 @@ class NVDAStoreClient(object):
 
     def query(self, *args, **kwargs):
         kwargs['_viewType'] = 'json';
-        if 'module' not in kwargs:
+        url = self.URL
+        if 'path' in kwargs:
+            url += kwargs['path']
+        if 'module' not in kwargs and 'path' not in kwargs:
             kwargs['module'] = 'index'
         try:
-            resp = self.session.request("POST", self.URL, data=kwargs, verify=False, proxies=self.proxies)
+            resp = self.session.request("POST", url, data=kwargs, verify=False, proxies=self.proxies)
         except Exception, e:
             logHandler.log.error("Failed to send request to the server: %s" % e)
             return None
@@ -42,8 +57,8 @@ class NVDAStoreClient(object):
             try:
                 logHandler.log.info(u"response: %s" %(resp.text))
                 data = json.loads(resp.text)
+                self.user = data[u'user']
             except:
-              logHandler.log.info("Invalid response from the server: %s" %(resp.text))
               return False                
             if len(data[u'moduleNotifications']) > 0:
               for n in data[u'moduleNotifications']:
@@ -58,11 +73,12 @@ class NVDAStoreClient(object):
           else:
             return False
 
-    def authenticate(self, username, password):
-        resp = self.query(module='index', action='login', username=username, passwd=password)
+    def authenticate(self):
+        resp = self.query(module='index', action='login', username=self.username, passwd=self.password)
 
     def on_login(self, params, data):
         self.authenticated = data[u'authenticated']
+        return self.authenticated
 
         
     def on_index(self, params, data):
@@ -76,20 +92,30 @@ class NVDAStoreClient(object):
         return modules
 
     def getNvdaModules(self):
+        if self.username is not None and self.authenticate() is False:
+            return False
         return self.query(module='nvda', action='index')
+
     def getModuleCategories(self):
+        if self.username is not None and self.authenticate() is False:
+            return None
         return self.query(module='nvda', action='categories')
-    
+     
     def getAddonFile(self, id, id_addon):
-      res = self.query(module='nvda', action='download', id=id, id_version=id_addon, _binary=True)
-      if res is not None:
-          logHandler.log.info("Downloaded %d bytes from the server" %(len(res)))
-      else:
-          logHandler.log.error("Failed to download the desired addon.")
-      return res
+        if self.username is not None and self.authenticate() is False:
+            return None
+        res = self.query(path="/nvda/download/addon-%s_%s.nvda-addon" % (id, id_addon), _binary=True)
+        if res is not None:
+            logHandler.log.info("Downloaded %d bytes from the server" %(len(res)))
+        else:
+            logHandler.log.error("Failed to download the desired addon.")
+        return res
+
     def getNotifications(self):
         notifs = self.notifications
         self.notifications = []
         return notifs
 
+    def getUserProfile(self):
+        return self.user
     
