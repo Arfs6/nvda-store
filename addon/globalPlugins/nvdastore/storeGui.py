@@ -35,7 +35,7 @@ class StoreDialog(wx.Dialog):
     profile = storeClient.getUserProfile()
     title = _("NVDAStore")
     if profile is not None:
-      title = _("NVDASTORE (%s %s)" %(profile[u'fname'], profile[u'lname']))
+      title = _("NVDASTORE ({firstName} {lastName})".format(firstName=profile[u'fname'], lastName=profile[u'lname']))
     super(StoreDialog,self).__init__(parent,title=title, pos=(100,200), size=(800, 600))
     StoreDialog._instance.storeAddons = storeAddons
     StoreDialog._instance.storeClient = storeClient
@@ -127,7 +127,7 @@ class StoreDialog(wx.Dialog):
     self.refreshCategoriesList()
     self.refreshAddonsList()
     self.addonsList.SetFocus()
-    self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
+    self.Center(wx.BOTH | wx.CENTER if "4.0" in wx.version() else wx.BOTH | wx.CENTER_ON_SCREEN)
 
   def onCategoryItemSelected(self, evt):
     index = self.categories.GetSelection()
@@ -150,6 +150,8 @@ class StoreDialog(wx.Dialog):
     if index == -1:
       return
     storeUtils.installAddon(self.storeClient, self.storeAddons[index])
+    self.refreshAddonsList(activeIndex = index)
+    self.addonsList.SetFocus()
     
   
       

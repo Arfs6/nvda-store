@@ -36,10 +36,20 @@ class NVDAStoreClient(object):
             
     def ping(self):
         resp = self.query()
-        return resp.status == 200
+        return resp
 
 
     def query(self, *args, **kwargs):
+        try:
+            self.username = config.conf["nvdastore"]["username"]
+            self.password = config.conf["nvdastore"]["password"]
+            self.proxy = config.conf["nvdastore"]["proxy"]
+            if self.proxy is not None:
+                self.proxies[u"http"] = self.proxy
+                self.proxies[u"https"] = self.proxy
+                self.proxies[u"ftp"] = shlf.proxy
+        except:
+            pass
         kwargs['_viewType'] = 'json';
         url = self.URL
         if 'path' in kwargs:
@@ -55,11 +65,14 @@ class NVDAStoreClient(object):
             if '_binary' in kwargs and kwargs['_binary'] is True:
                 return resp.content
             try:
-                logHandler.log.info(u"response: %s" %(resp.text))
+                logHandler.log.debugWarning(u"response: %s" %(resp.text))
                 data = json.loads(resp.text)
+            except:
+                return False
+            try:
                 self.user = data[u'user']
             except:
-              return False                
+                pass
             if len(data[u'moduleNotifications']) > 0:
               for n in data[u'moduleNotifications']:
                 self.notifications.append(n)

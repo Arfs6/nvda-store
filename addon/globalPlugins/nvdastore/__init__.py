@@ -7,7 +7,7 @@
 
 
 
-import os, sys, time
+import os, sys, time, threading, Queue
 import globalVars
 import globalPluginHandler, logHandler
 import api
@@ -24,7 +24,41 @@ import addonHandler
 addonHandler.initTranslation()
 
 NVDASTORE_MODULE_NAME = 'nvdastore'
+GP_CONNECTED = 0
+GP_DISCONNECTED = 1
 
+
+class NetworkChecker(threading.Thread):
+    def __init__(self, gpObject):
+        self.gpObject = gpObject
+        self.shouldTerminate = False
+        super(NetworkChecker, self).__init__()
+
+    def run(self):
+        self.timeDelay = 1.0
+        while not self.shouldTerminate:
+            ret = None
+            try:
+                ret = self.gpObject.storeClient.getModuleCategories()
+            except:
+                logHandler.log.exception("Failed to connect to the NVDA Store.")
+            logHandler.log.debugWarning("Ping reply: {}".format(ret))
+            if ret is None or len(ret) == 0:
+                self.timeDelay = 5.0
+                data = {}
+                data["type"] = GP_DISCONNECTED
+                data["message"] = _("Not connected to the NVDA Store")
+                with self.gpObject.queueLock:
+                    self.gpObject.msgQueue.put(data)
+            else:
+                self.timeDelay = 3600.0
+                data = {}
+                data["type"] = GP_CONNECTED
+                data["message"] = _("Connected to the NVDA Store")
+                with self.gpObject.queueLock:
+                    self.gpObject.msgQueue.put(data)
+            time.sleep(self.timeDelay)
+                
 class StoreAddon(object):
     id = ""
     category = ""
@@ -94,9 +128,15 @@ capCache={}
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     scriptCategory = _("NVDAStore")
     addons = []
+    queueLock = threading.Lock()
+    msgQueue = Queue.Queue()
+    lastData = None
     
     def __init__(self):
         super(globalPluginHandler.GlobalPlugin, self).__init__()
+        self.networkChecker = NetworkChecker(self)
+        self.networkChecker.start()
+        
         if globalVars.appArgs.secure: return
         self.prefsMenu = gui.mainFrame.sysTrayIcon.preferencesMenu
         # Instanciate our preference menu.
@@ -106,7 +146,24 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         self.refreshing = False
         self.updates = []
         self.storeClient = storeApi.NVDAStoreClient()
-        wx.CallLater(5000, self.refreshAddons)
+        wx.CallLater(1000, self.onTimer)
+
+    def terminate(self):
+        self.networkChecker.shouldTerminate = True
+
+    def onTimer(self):
+        try:
+            with self.queueLock:
+                data = self.msgQueue.get_nowait()
+                self.lastData = data
+                # logHandler.log.debugWarning("Got network checker message: {}".format(data))
+                if 'message' in data:
+                    logHandler.log.debugWarning(data["message"])
+                if data["type"] is GP_CONNECTED:
+                    self.refreshAddons()
+        except:
+            pass
+        wx.CallLater(1000, self.onTimer)
         
     def getCategory(self, catList, id):
         for cat in catList:
@@ -187,6 +244,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 
     def script_updateAll(self, gesture):
+        if self.lastData is None or self.lastData["type"] is GP_DISCONNECTED:
+            ui.message(self.lastData["message"])
+            return
         self.updateAll()
     script_updateAll.__doc__ = _("Updates all addons to the latest version")
 
@@ -220,23 +280,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             core.restart()
 
     def script_nvdaStore(self, gesture):
-        if len(self.addons) == 0:
-            gui.mainFrame.prePopup()
-            progressDialog = gui.IndeterminateProgressDialog(gui.mainFrame,
-			                                     _("Updating addons' list"),
-			                                     _("Please wait while the add-on list is being updated."))
-            try:
-                gui.ExecAndPump(self.doRefreshAddons)
-            except:
-                progressDialog.done()
-                del progressDialog
-                gui.mainFrame.postPopup()
-                return
+        if self.lastData is None or self.lastData["type"] is GP_DISCONNECTED:
+            ui.message(self.lastData["message"])
+            return
+        gui.mainFrame.prePopup()
+        progressDialog = gui.IndeterminateProgressDialog(gui.mainFrame,
+			                                 _("Updating addons' list"),
+			                                 _("Please wait while the add-on list is being updated."))
+        try:
+            gui.ExecAndPump(self.doRefreshAddons)
+        except:
             progressDialog.done()
             del progressDialog
             gui.mainFrame.postPopup()
-                
-
+            return
+        progressDialog.done()
+        del progressDialog
+        gui.mainFrame.postPopup()
+        
+        
         gui.mainFrame.prePopup()
         dlg = storeGui.StoreDialog(gui.mainFrame, self.storeClient, self.addons)
         dlg.Show()
@@ -246,7 +308,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     script_nvdaStore.__doc__ = _("Opens the NVDA Store to download, install and update NVDA add-ons.")
 
     __gestures = {
-        "kb:nvda+shift+n": "nvdaStore",
+        "kb:nvda+shift+control+n": "nvdaStore",
         "kb:nvda+shift+control+u": "updateAll",
     }
-    
