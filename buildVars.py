@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 # Build customizations
 # Change this file instead of sconstruct or manifest files, whenever possible.
@@ -19,7 +19,7 @@ addon_info = {
 	# Translators: Long description to be shown for this add-on on add-on information from add-ons manager
 	"addon_description" : _("""Download install and update add-ons within NVDA."""),
 	# version
-	"addon_version" : "1.0.2",
+	"addon_version" : "1.0.3",
 	# Author(s)
 	"addon_author" : u"Yannick PLASSIARD <plassiardyannick@gmail.com>",
 	# URL for the add-on documentation support

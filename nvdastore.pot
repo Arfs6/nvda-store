@@ -1,54 +1,52 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the cecitek package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: nvdastore 1.0.2\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-17 11:36+0200\n"
-"PO-Revision-Date: 2018-04-16 10:00:00 +0200\n"
-"Last-Translator: Yannick PLASSIARD <plassiardyannick@gmail.com>\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: fr\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: buildVars.py:17 addon/globalPlugins/nvdastore/__init__.py:129
 #: addon/globalPlugins/nvdastore/__init__.py:267
 #: addon/globalPlugins/nvdastore/storeGui.py:36
 msgid "NVDAStore"
-msgstr "NVDAStore"
+msgstr ""
 
 #: buildVars.py:20
 msgid "Download install and update add-ons within NVDA."
 msgstr ""
-"Télécharger, installer et mettre à jour des modules complémentaires "
-"directement depuis NVDA."
 
 #: addon/globalPlugins/nvdastore/__init__.py:50
 msgid "Not connected to the NVDA Store"
-msgstr "Non connecté au NVDAStore"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:57
 msgid "Connected to the NVDA Store"
-msgstr "Connecté au NVDAStore"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:143
 msgid "NVDAStore settings..."
-msgstr "NVDAStore"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:143
 msgid "NVDAStore Add-on settings"
-msgstr "Préférences NVDAStore"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:190
 #, python-format
 msgid "Notification: %s"
-msgstr "Notifications: %s"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:192
 #: addon/globalPlugins/nvdastore/__init__.py:196
@@ -56,217 +54,206 @@ msgid ""
 "Unable to connect to the Cecitek NVDAStore. Please check you're connected to "
 "the internet."
 msgstr ""
-"Impossible de se connecter au Cecitek NVDAStore. Vérifiez votre connexion "
-"Internet."
 
 #: addon/globalPlugins/nvdastore/__init__.py:232
 msgid ""
 "A new release is available for the NVDAStore add-on. Woul,d you like to "
 "install it right now? This will cause NVDA to restart."
 msgstr ""
-"Nouvelle version du module NVDAStore disponible. Souhaitez-vous l'installer "
-"maintenant? Cela entraînera le redémarrage de NVDA."
 
 #: addon/globalPlugins/nvdastore/__init__.py:233
 msgid "Update available"
-msgstr "Mise à jour disponible"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:235
 msgid "Updating..."
-msgstr "Mise à jour en cours..."
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:245
-#, fuzzy
 msgid "Addons updates available."
-msgstr "Mises à jour de modules complémentaires disponibles."
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:253
 msgid "Updates all addons to the latest version"
-msgstr "Mettre à jour tous les modules complémentaires"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:260
 msgid "NVDAStore: No update available."
-msgstr "NVDAStore: Aucune mise à jour disponible."
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:268
 #, python-brace-format
 msgid "Updating {name}..."
-msgstr "Mise à jour de {name} en cours..."
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:269
 #, python-brace-format
 msgid "Updating {name}"
-msgstr "Mise à jour de {name} en cours..."
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:290
 msgid "Updating addons' list"
-msgstr "Récupération de la liste de modules"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/__init__.py:291
 msgid "Please wait while the add-on list is being updated."
 msgstr ""
-"Veuillez patienter pendant la mise à jour de la liste des modules "
-"compl&mentaires..."
 
 #: addon/globalPlugins/nvdastore/__init__.py:310
 msgid "Opens the NVDA Store to download, install and update NVDA add-ons."
 msgstr ""
-"Ouvre le NVDAStore pour télécharger, installer et mettre à jour ees modules "
-"complémentaires."
 
 #: addon/globalPlugins/nvdastore/storeConfig.py:27
 msgid "NVDAStore settings"
-msgstr "Préférences NVDAStore"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeConfig.py:33
 msgid "NVDAStore &username:"
-msgstr "Nom d'utilisateur NVDAStore:"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeConfig.py:35
 msgid "&password:"
-msgstr "Mot de &passe:"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeConfig.py:36
 msgid "Prox&y (host:port):"
-msgstr "Prox&y (hôte:port):"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:21
 msgid "Application-specific modules"
-msgstr "Modules complémentaires pour des applications spécifiques"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:22
 msgid "Braille"
-msgstr "Braille"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:23
 msgid "Internet"
-msgstr "Internet"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:24
 msgid "NVDA Core features"
-msgstr "Extensions du coeur de NVDA"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:25
 msgid "Speech synths and voices"
-msgstr "Synthèses vocales"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:38
 #, python-brace-format
 msgid "NVDASTORE ({firstName} {lastName})"
-msgstr "NVDAStore ({firstName} {lastName})"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:49
 msgid ""
 "All add-ons are currently disabled. To enable add-ons you must restart NVDA."
 msgstr ""
-"Les modules complémentaires sont désactivés, vous devez redémarrer NVDA "
-"avant d'utiliser ce module."
 
 #: addon/globalPlugins/nvdastore/storeGui.py:52
 msgid "Categories"
-msgstr "Catégories"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:60
 msgid "Modules"
-msgstr "Modules"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:64
 msgid "Package"
-msgstr "Paquet"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:66
 msgid "Status"
-msgstr "état"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:68
 msgid "Version"
-msgstr "Version"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:70
 msgid "Author"
-msgstr "Auteur"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:78
 msgid "Description"
-msgstr "Description"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:85
 msgid "&About add-on..."
-msgstr "&a propos de ce module complémentaire..."
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:90
 msgid "Add-on &help"
-msgstr "Aid&e du module complémentaire"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:95
 #: addon/globalPlugins/nvdastore/storeGui.py:263
 #: addon/globalPlugins/nvdastore/storeGui.py:327
 msgid "&Disable add-on"
-msgstr "&Désactiver le module complémentaire"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:100
 msgid "&Install"
-msgstr "&Installer"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:106
 msgid "&Remove"
-msgstr "&Supprimer"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:111
 msgid "Store"
-msgstr "Store"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:119
 msgid "&Close"
-msgstr "&Fermer"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:162
 msgid "Are you sure you wish to remove the selected add-on from NVDA?"
-msgstr "êtes-vous sûr de vouloir désinstaller ce module?"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:164
 msgid "Remove Add-on"
-msgstr "Supprimer le module complémentaire"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:174
 #: addon/globalPlugins/nvdastore/storeGui.py:269
 msgid "&update"
-msgstr "&mettre à jour"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:175
 msgid "update available"
-msgstr "mise à jour disponible"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:177
 #: addon/globalPlugins/nvdastore/storeGui.py:271
 msgid "Re&install"
-msgstr "&réinstaller"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:178
 msgid "Up to date"
-msgstr "à jour"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:181
 #: addon/globalPlugins/nvdastore/storeGui.py:274
 msgid "&install"
-msgstr "&installer"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:182
 msgid "Not installed"
-msgstr "Pas installé"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:194
 msgid "All"
-msgstr "Tous"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:252
 msgid "Changelog:"
-msgstr "Nouveautés:"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:263
 #: addon/globalPlugins/nvdastore/storeGui.py:327
 msgid "&Enable add-on"
-msgstr "A&ctiver"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:300
 #, python-brace-format
@@ -276,37 +263,33 @@ msgid ""
 "Author: {author}\n"
 "Description: {description}\n"
 msgstr ""
-"{summary} ({name})\n"
-"Version: {version}\n"
-"Auteur: {author}\n"
-"Description: {description}\n"
 
 #: addon/globalPlugins/nvdastore/storeGui.py:308
 #, python-brace-format
 msgid "URL: {url}"
-msgstr "Site web: {url}"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeGui.py:310
 msgid "Add-on Information"
-msgstr "Informations sur le module complémentaire"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:14
 #, python-format
 msgid "Downloading %s"
-msgstr "Téléchargement de %s en cours"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:19
 msgid "Unable to download the add-on."
-msgstr "Impossible de télécharger le module complémentaire."
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:29
 #, python-format
 msgid "Unable to download %s"
-msgstr "Impossible de télécharger %s"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:32
 msgid "Installing"
-msgstr "Installation en cours"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:39
 #, python-format
@@ -314,23 +297,21 @@ msgid ""
 "Failed to open add-on package file at %s - missing file or invalid file "
 "format"
 msgstr ""
-"Impossible d'ouvrir le fichier du module complémentaire %s: Format de "
-"fichier invalide"
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:41
 #: addon/globalPlugins/nvdastore/storeUtils.py:67
 msgid "Error"
-msgstr "Erreur"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:55
 msgid "Installing Add-on"
-msgstr "Installation du module complémentaire"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:57
 msgid "Please wait while the add-on is being installed."
-msgstr "Veuillez patienter durant l'installation du module complémentaire"
+msgstr ""
 
 #: addon/globalPlugins/nvdastore/storeUtils.py:65
 #, python-format
 msgid "Failed to install add-on from %s"
-msgstr "Impossible d'installer le module depuis %s"
+msgstr ""
