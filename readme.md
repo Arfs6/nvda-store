@@ -3,7 +3,7 @@
 Version 0.6
 
 ## Introduction
-This document describes how to use the NVDAStore Addon, an effective way to download install and update addons within QVDA.
+This document describes how to use the NVDAStore Addon, an effective way to download install and update addons withiNVDA.
 The main user features of this module are:
 - Easy to use interface
 - A single list presenting available add-ons from various places.
